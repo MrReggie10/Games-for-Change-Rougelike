@@ -12,32 +12,27 @@ public class Movement : MonoBehaviour
     float instantX;
     float instantY;
 
-    private bool rolling;
-    float rollingTimer = 0;
+    private bool rolling = false;
+    private bool canRoll = true;
 
     [SerializeField] private float speed;
 
     [SerializeField] private float rollTime;
     [SerializeField] private float rollMultiplier;
-    [SerializeField] private int totalRolls;
     [SerializeField] private float rollRecoveryTime;
-
-    [SerializeField] private int rollsRemaining;
-    [SerializeField] private int recoveringRolls = 0;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Start()
-    {
-        rollsRemaining = totalRolls;
-    }
-
     void Update()
     {
         GetInput();
+    }
+
+    private void FixedUpdate()
+    {
         ApplyMovement();
     }
 
@@ -46,9 +41,9 @@ public class Movement : MonoBehaviour
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.Space) && rollsRemaining > 0) { StartCoroutine("Roll"); }
+        if (Input.GetKeyDown(KeyCode.Space) && canRoll) { StartCoroutine("Roll"); }
 
-        if(!rolling && (xInput != 0 || yInput != 0))
+        if (!rolling && (xInput != 0 || yInput != 0))
         {
             instantX = xInput;
             instantY = yInput;
@@ -57,7 +52,7 @@ public class Movement : MonoBehaviour
 
     private void ApplyMovement()
     {
-        if(!rolling)
+        if (!rolling)
         {
             rb.velocity = new Vector2(xInput, yInput).normalized * speed;
         }
@@ -70,26 +65,18 @@ public class Movement : MonoBehaviour
     private IEnumerator Roll()
     {
         rolling = true;
-        rollsRemaining -= 1;
+        canRoll = false;
         StartCoroutine("RollTimer");
 
         yield return new WaitForSeconds(rollTime);
 
-        if(recoveringRolls != 0)
-        {
-            rolling = false;
-        }
+        rolling = false;
     }
 
     private IEnumerator RollTimer()
     {
-        recoveringRolls += 1;
         yield return new WaitForSeconds(rollRecoveryTime);
 
-        if(recoveringRolls == 1)
-        {
-            rollsRemaining = totalRolls;
-        }
-        recoveringRolls -= 1;
+        canRoll = true;
     }
 }
