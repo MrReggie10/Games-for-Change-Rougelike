@@ -9,8 +9,8 @@ public class Movement : MonoBehaviour
     private float xInput;
     private float yInput;
 
-    float instantX;
-    float instantY;
+    private float instantX;
+    private float instantY;
 
     private bool rolling = false;
     private bool canRoll = true;
@@ -41,7 +41,7 @@ public class Movement : MonoBehaviour
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.Space) && canRoll) { StartCoroutine("Roll"); }
+        if (Input.GetKeyDown(KeyCode.Space) && canRoll) { StartCoroutine(Roll()); }
 
         if (!rolling && (xInput != 0 || yInput != 0))
         {
@@ -66,7 +66,7 @@ public class Movement : MonoBehaviour
     {
         rolling = true;
         canRoll = false;
-        StartCoroutine("RollTimer");
+        StartCoroutine(RollTimer());
 
         yield return new WaitForSeconds(rollTime);
 
