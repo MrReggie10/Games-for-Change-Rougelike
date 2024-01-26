@@ -10,7 +10,9 @@ namespace GFC.Items
     {
         public abstract string itemName { get; }
         public abstract string itemDescription { get; }
-        public abstract ItemType type { get; }
+        public abstract ItemType itemType { get; }
         public abstract Sprite inventorySprite { get; }
+
+        public abstract void Use(PlayerStats player);
     }
 }

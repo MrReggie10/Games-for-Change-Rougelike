@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e598484691b8b6342a2211a365a73454, type: 3}
   m_Name: Cap
   m_EditorClassIdentifier: 
-  name: 
-  description: 
-  sprite: {fileID: 0}
+  m_name: 
+  m_description: 
+  m_sprite: {fileID: 0}
