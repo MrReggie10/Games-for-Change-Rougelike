@@ -15,13 +15,25 @@ public class PlayerStats : MonoBehaviour
 
     public int attack => (equippedShoes ? equippedShoes.attackModifier : defaultShoes.attackModifier) + miscAttackMod;
     private int m_miscAttack;
-    public int miscAttackMod { get => m_miscAttack; set { m_miscAttack = value; OnAttackChange?.Invoke(this); } }
+    public int miscAttackMod { get => m_miscAttack; 
+        set 
+        {
+            if (m_miscAttack == value) return;
+            m_miscAttack = value; 
+            OnAttackChange?.Invoke(this); 
+        } }
 
     public int defense => shirtsDefense + pantsDefense + miscDefenseMod;
     private int shirtsDefense;
     private int pantsDefense;
     private int m_miscDefense;
-    public int miscDefenseMod { get => m_miscDefense; set { m_miscDefense = value; OnDefenseChange?.Invoke(this); } }
+    public int miscDefenseMod { get => m_miscDefense; 
+        set
+        {
+            if (m_miscDefense == value) return;
+            m_miscDefense = value; 
+            OnDefenseChange?.Invoke(this); 
+        } }
 
     private List<ShirtSO> m_equippedShirts;
     public IReadOnlyList<ShirtSO> equippedShirts => m_equippedShirts;
@@ -36,10 +48,12 @@ public class PlayerStats : MonoBehaviour
     public IReadOnlyList<PantsSO> equippedPants => m_equippedPants;
     [Tooltip("The max number of pants the player can wear before their defense values get scaled down.")]
     [SerializeField] int effectivePants = 1;
+    [Range(0,1)]
     [Tooltip("How much pants' defense values get multiplied by after the effective limit.\n" +
         "First pants get scaled by this amount, second pants get scaled by this amount squared, etc.")]
     [SerializeField] float pantsDefenseMultiplier = 0.7f;
 
+    public HatSO equippedHat { get; private set; }
     public ShoesSO equippedShoes { get; private set; }
 
     public event ClothingEvent OnEquipClothing;
@@ -159,12 +173,34 @@ public class PlayerStats : MonoBehaviour
     }
     #endregion
 
+    #region Hats
+    public void EquipHat(HatSO hat)
+    {
+        UnequipHat();
+        equippedHat = hat;
+        hat.OnEquip(this);
+        OnEquipClothing?.Invoke(this, hat);
+    }
+
+    public HatSO UnequipHat()
+    {
+        HatSO oldHat = equippedHat;
+        equippedHat = null;
+        if(oldHat != null)
+        {
+            oldHat.OnUnequip(this);
+            OnUnequipClothing?.Invoke(this, oldHat);
+        }
+        return oldHat;
+    }
+    #endregion
+
     #region Shoes
     public void EquipShoes(ShoesSO shoes)
     {
         int oldAttack = attack;
         UnequipShoes(false);
-        this.equippedShoes = shoes;
+        equippedShoes = shoes;
         if (oldAttack != attack)
             OnAttackChange?.Invoke(this);
         shoes.OnEquip(this);

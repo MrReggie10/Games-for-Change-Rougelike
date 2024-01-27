@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 333b31d4814e55047afffa73c32ee18e, type: 3}
   m_Name: Leggings
   m_EditorClassIdentifier: 
-  m_name: 
+  m_name: Leggings
   m_description: 
   m_sprite: {fileID: 0}
-  m_defenseModifier: 0
+  m_defenseModifier: 10
+  m_passives: []

@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 333b31d4814e55047afffa73c32ee18e, type: 3}
-  m_Name: Shorts
+  m_Script: {fileID: 11500000, guid: f0051056fedc37f4ba5e77c83c062090, type: 3}
+  m_Name: Default (Barefoot)
   m_EditorClassIdentifier: 
-  m_name: Shorts
+  m_name: Socks
   m_description: 
   m_sprite: {fileID: 0}
-  m_defenseModifier: 5
+  m_attackModifier: 5
   m_passives: []

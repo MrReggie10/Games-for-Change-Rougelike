@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0051056fedc37f4ba5e77c83c062090, type: 3}
   m_Name: Sneakers
   m_EditorClassIdentifier: 
-  m_name: 
+  m_name: Sneakers
   m_description: 
   m_sprite: {fileID: 0}
-  m_attackModifier: 0
+  m_attackModifier: 8
+  m_passives: []
