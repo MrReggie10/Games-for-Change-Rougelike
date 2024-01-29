@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Parka
   m_description: 
-  m_sprite: {fileID: 0}
+  m_sprite: {fileID: 21300000, guid: b39051d982dec7a4fa3b621ecd5f646a, type: 3}
   m_defenseModifier: 12
   m_passives: []
