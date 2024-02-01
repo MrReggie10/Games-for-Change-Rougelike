@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +14,11 @@ public class Attack : MonoBehaviour
 	[SerializeField] private float kickTime;
 	[SerializeField] private float kickRecoveryTime;
 
-    void Update()
+	[SerializeField] private int damage;
+	[SerializeField] private float knockbackTime;
+	[SerializeField] private float knockbackForce;
+
+	void Update()
     {
 		GetInput();
 		UpdateHitbox();
@@ -55,6 +60,18 @@ public class Attack : MonoBehaviour
 		kicking = true;
 		canKick = false;
 		StartCoroutine(KickTimer());
+
+		meleeHitbox.SetActive(true);
+		List<Collider2D> overlapColliders = new List<Collider2D>();
+		meleeHitbox.GetComponent<CapsuleCollider2D>().OverlapCollider(new ContactFilter2D().NoFilter(), overlapColliders);
+		
+		foreach(Collider2D collider in overlapColliders)
+        {
+			if(collider.GetComponent<IEnemy>() != null)
+            {
+				collider.GetComponent<IEnemy>().Damage(damage, knockbackTime, knockbackForce);
+            }
+        }
 
 		yield return new WaitForSeconds(kickTime);
 
