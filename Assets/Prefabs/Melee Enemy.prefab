@@ -267,7 +267,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackHitboxCenter: {fileID: 8810994811826470602}
   meleeHitbox: {fileID: 395414066880442884}
-  health: 100
+  health: 500
   speed: 4
   damage: 30
   attackDistance: 2
