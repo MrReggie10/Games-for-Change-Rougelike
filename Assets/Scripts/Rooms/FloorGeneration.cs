@@ -7,16 +7,20 @@ public class FloorGeneration : MonoBehaviour
     [SerializeField] private GameObject mainGuy;
 
     private int[,] floorLayout = new int[10,10];
-    private List<Room> placedRooms = new List<Room>();
+    //private List<Room> placedRooms = new List<Room>();
+
+    Dictionary<string, Room> placedRooms1 = new Dictionary<string, Room>();
     private int[] currentTile = new int[2];
 
     [SerializeField] private List<GameObject> roomPrefabs = new List<GameObject>();
+
+    [SerializeField] private int roomsToEnd;
 
     private bool generationFailed = false;
     
     void Start()
     {
-        GenerateFloor(7, 15);
+        GenerateFloor(10, 10);
     }
 
     private void GenerateFloor(int minRoomsToEnd, int extraRooms)
@@ -34,25 +38,46 @@ public class FloorGeneration : MonoBehaviour
             if(generationFailed)
             {
                 generationFailed = false;
-                placedRooms.Clear();
+                placedRooms1.Clear();
                 floorLayout.Initialize();
 
                 GenerateFloor(minRoomsToEnd, extraRooms);
                 return;
             }
+
+            if(i == minRoomsToEnd - 1)
+            {
+                foreach(SpriteRenderer renderer in placedRooms1[currentTile[0] + " " + currentTile[1]].renderers)
+                {
+                    renderer.color = Color.red;
+                }
+            }
+
+            List<string> keyList = new List<string>(placedRooms1.Keys);
+            Debug.Log(keyList[keyList.Count - 1]);
         }
 
         for(int i = 0; i < extraRooms; i++)
         {
             while(true)
             {
-                int randomRoomNum = Random.Range(0, placedRooms.Count);
-                currentTile[0] = placedRooms[randomRoomNum].mapXPos;
-                currentTile[1] = placedRooms[randomRoomNum].mapYPos;
+                List<string> keyList = new List<string>(placedRooms1.Keys);
 
-                GenerateAdjacentRoom();
-                if(!generationFailed) { break; } else { generationFailed = false; }
+                int randPosition = Random.Range(0, keyList.Count);
+                currentTile[0] = System.Convert.ToInt32(keyList[randPosition].Substring(0, 1));
+                currentTile[1] = System.Convert.ToInt32(keyList[randPosition].Substring(2));
+
+                if(placedRooms1[currentTile[0] + " " + currentTile[1]].renderers[0].GetComponent<SpriteRenderer>().color != Color.red )
+                {
+                    GenerateAdjacentRoom();
+                }
+                else
+                {
+                    generationFailed = true;
+                }
+                if (!generationFailed) {  break; } else { generationFailed = false; }
             }
+            Debug.Log(i);
         }
     }
 
@@ -73,7 +98,7 @@ public class FloorGeneration : MonoBehaviour
 
         int selectedDirection = availableDirections[Random.Range(0, availableDirections.Count)];
 
-        foreach(Room room in placedRooms)
+        foreach(Room room in placedRooms1.Values)
         {
             if(room.mapXPos == currentTile[0] && room.mapYPos == currentTile[1])
             {
@@ -111,7 +136,7 @@ public class FloorGeneration : MonoBehaviour
         GameObject currentRoom = Instantiate(roomPrefabs[roomNumber], new Vector3(currentTile[0] * 36, currentTile[1] * 20, 0), Quaternion.identity);
         currentRoom.GetComponent<Room>().SetLocation(currentTile[0], currentTile[1]);
         floorLayout[currentTile[0], currentTile[1]] = 1;
-        placedRooms.Add(currentRoom.GetComponent<Room>());
+        placedRooms1.Add(currentTile[0] + " " + currentTile[1] , currentRoom.GetComponent<Room>());
         return currentRoom.GetComponent<Room>();
     }
 }

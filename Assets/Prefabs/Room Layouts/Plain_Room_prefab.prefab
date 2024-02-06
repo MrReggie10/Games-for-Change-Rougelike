@@ -1553,6 +1553,15 @@ MonoBehaviour:
   leftBarrier: {fileID: 3021769622096966745}
   mapXPos: 0
   mapYPos: 0
+  renderers:
+  - {fileID: 632351882619058844}
+  - {fileID: 2953467889498570240}
+  - {fileID: 514284172116857374}
+  - {fileID: 7185529383131152382}
+  - {fileID: 6481354865794796011}
+  - {fileID: 6590146637436097581}
+  - {fileID: 8894556836999130706}
+  - {fileID: 5877300416289918525}
 --- !u!1 &6395255880162321460
 GameObject:
   m_ObjectHideFlags: 0

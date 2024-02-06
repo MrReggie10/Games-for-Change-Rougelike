@@ -11,6 +11,8 @@ public class Room : MonoBehaviour
 
     public int mapXPos;
     public int mapYPos;
+
+    public List<SpriteRenderer> renderers = new List<SpriteRenderer>();
     
     public void SetLocation(int x, int y)
     {
