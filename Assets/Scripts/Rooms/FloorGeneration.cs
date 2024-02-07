@@ -20,7 +20,7 @@ public class FloorGeneration : MonoBehaviour
     
     void Start()
     {
-        GenerateFloor(10, 10);
+        GenerateFloor(10, 20);
     }
 
     private void GenerateFloor(int minRoomsToEnd, int extraRooms)
@@ -52,9 +52,6 @@ public class FloorGeneration : MonoBehaviour
                     renderer.color = Color.red;
                 }
             }
-
-            List<string> keyList = new List<string>(placedRooms1.Keys);
-            Debug.Log(keyList[keyList.Count - 1]);
         }
 
         for(int i = 0; i < extraRooms; i++)
@@ -77,7 +74,6 @@ public class FloorGeneration : MonoBehaviour
                 }
                 if (!generationFailed) {  break; } else { generationFailed = false; }
             }
-            Debug.Log(i);
         }
     }
 
