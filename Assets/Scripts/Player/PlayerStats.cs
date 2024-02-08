@@ -35,22 +35,28 @@ public class PlayerStats : MonoBehaviour
             OnDefenseChange?.Invoke(this); 
         } }
 
+    [Tooltip("If true, effectiveShirts/effectivePants is the max number of shirts/pants the player can wear.\n" +
+        "If false, effectiveShirts/effectivePants is the number they can wear before defense gets scaled.")]
+    [SerializeField] bool useHardLimit;
+    [Space]
     private List<ShirtSO> m_equippedShirts;
     public IReadOnlyList<ShirtSO> equippedShirts => m_equippedShirts;
     [Tooltip("The max number of shirts the player can wear before their defense values get scaled down.")]
     [SerializeField] int effectiveShirts = 2;
     [Range(0,1)]
     [Tooltip("How much shirts' defense values get multiplied by after the effective limit.\n" +
-        "First shirt gets scaled by this amount, second shirt gets scaled by this amount squared, etc.")]
+        "First shirt gets scaled by this amount, second shirt gets scaled by this amount squared, etc.\n" +
+        "Only used when useHardLimit = false.")]
     [SerializeField] float shirtDefenseMultiplier = 0.85f;
-
+    [Space]
     private List<PantsSO> m_equippedPants;
     public IReadOnlyList<PantsSO> equippedPants => m_equippedPants;
     [Tooltip("The max number of pants the player can wear before their defense values get scaled down.")]
     [SerializeField] int effectivePants = 1;
     [Range(0,1)]
     [Tooltip("How much pants' defense values get multiplied by after the effective limit.\n" +
-        "First pants get scaled by this amount, second pants get scaled by this amount squared, etc.")]
+        "First pants get scaled by this amount, second pants get scaled by this amount squared, etc.\n" +
+        "Only used when useHardLimit = false.")]
     [SerializeField] float pantsDefenseMultiplier = 0.7f;
 
     public HatSO equippedHat { get; private set; }
@@ -70,8 +76,11 @@ public class PlayerStats : MonoBehaviour
     }
 
     #region Shirts
-    public void AddShirt(ShirtSO shirt)
+    public bool EquipShirt(ShirtSO shirt)
     {
+        if (equippedShirts.Count >= effectiveShirts && useHardLimit)
+            return false;
+
         int i = 0;
         for(; i < m_equippedShirts.Count; i++)
         {
@@ -84,9 +93,10 @@ public class PlayerStats : MonoBehaviour
         RecalculateShirtsDefense();
         shirt.OnEquip(this);
         OnEquipClothing?.Invoke(this, shirt);
+        return true;
     }
 
-    public bool RemoveShirt(ShirtSO shirt)
+    public bool UnequipShirt(ShirtSO shirt)
     {
         if (m_equippedShirts.Remove(shirt))
         {
@@ -122,8 +132,11 @@ public class PlayerStats : MonoBehaviour
     #endregion
 
     #region Pants
-    public void AddPants(PantsSO pants)
+    public bool EquipPants(PantsSO pants)
     {
+        if (equippedPants.Count >= effectivePants && useHardLimit)
+            return false;
+
         int i = 0;
         for (; i < m_equippedPants.Count; i++)
         {
@@ -136,9 +149,10 @@ public class PlayerStats : MonoBehaviour
         RecalculatePantsDefense();
         pants.OnEquip(this);
         OnEquipClothing?.Invoke(this, pants);
+        return true;
     }
 
-    public bool RemovePants(PantsSO pants)
+    public bool UnequipPants(PantsSO pants)
     {
         if (m_equippedPants.Remove(pants))
         {
@@ -174,12 +188,13 @@ public class PlayerStats : MonoBehaviour
     #endregion
 
     #region Hats
-    public void EquipHat(HatSO hat)
+    public HatSO EquipHat(HatSO hat)
     {
-        UnequipHat();
+        HatSO oldHat = UnequipHat();
         equippedHat = hat;
         hat.OnEquip(this);
         OnEquipClothing?.Invoke(this, hat);
+        return oldHat;
     }
 
     public HatSO UnequipHat()
@@ -196,15 +211,16 @@ public class PlayerStats : MonoBehaviour
     #endregion
 
     #region Shoes
-    public void EquipShoes(ShoesSO shoes)
+    public ShoesSO EquipShoes(ShoesSO shoes)
     {
         int oldAttack = attack;
-        UnequipShoes(false);
+        ShoesSO oldShoes = UnequipShoes(false);
         equippedShoes = shoes;
         if (oldAttack != attack)
             OnAttackChange?.Invoke(this);
         shoes.OnEquip(this);
         OnEquipClothing?.Invoke(this, shoes);
+        return oldShoes;
     }
 
     public ShoesSO UnequipShoes(bool triggerOnAttackChange = true)

@@ -8,11 +8,12 @@ namespace GFC.Items
 
     public abstract class ItemSO : ScriptableObject
     {
-        public abstract string itemName { get; }
-        public abstract string itemDescription { get; }
-        public abstract ItemType itemType { get; }
+        public abstract new string name { get; }
+        public virtual string info => $"Type: {type}";
+        public abstract string description { get; }
+        public abstract ItemType type { get; }
         public abstract Sprite inventorySprite { get; }
 
-        public abstract void Use(PlayerStats player);
+        public abstract bool Use(PlayerStats player, PlayerInventory inventory);
     }
 }

@@ -14,16 +14,19 @@ namespace GFC.Items
         [SerializeField] int m_attackModifier;
         [SerializeField] List<PassiveAbility> m_passives;
 
-        public override ItemType itemType => ItemType.Shoes;
-        public override string itemName => m_name;
-        public override string itemDescription => m_description;
+        public override ItemType type => ItemType.Shoes;
+        public override string name => m_name;
+        public override string info => base.info + $"\nAttack: {attackModifier}";
+        public override string description => m_description;
         public override Sprite inventorySprite => m_sprite;
         public override IReadOnlyList<PassiveAbility> passives => m_passives;
         public int attackModifier => m_attackModifier;
 
-        public override void Use(PlayerStats player)
+        public override bool Use(PlayerStats player, PlayerInventory inventory)
         {
-            player.EquipShoes(this);
+            ShoesSO oldShoes = player.EquipShoes(this);
+            if (oldShoes != null) inventory.AddItem(oldShoes);
+            return true;
         }
     }
 }

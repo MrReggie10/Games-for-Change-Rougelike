@@ -13,15 +13,17 @@ namespace GFC.Items
         [SerializeField] Sprite m_sprite;
         [SerializeField] List<PassiveAbility> m_passives;
 
-        public override ItemType itemType => ItemType.Hat;
-        public override string itemName => m_name;
-        public override string itemDescription => m_description;
+        public override ItemType type => ItemType.Hat;
+        public override string name => m_name;
+        public override string description => m_description;
         public override Sprite inventorySprite => m_sprite;
         public override IReadOnlyList<PassiveAbility> passives => m_passives;
 
-        public override void Use(PlayerStats player)
+        public override bool Use(PlayerStats player, PlayerInventory inventory)
         {
-            player.EquipHat(this);
+            HatSO oldHat = player.EquipHat(this);
+            if (oldHat != null) inventory.AddItem(oldHat);
+            return true;
         }
     }
 }

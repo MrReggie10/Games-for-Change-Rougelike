@@ -18,8 +18,8 @@ public class PlayerStatsDebug : MonoBehaviour
     void Start()
     {
         player = GetComponent<PlayerStats>();
-        player.OnEquipClothing += (_, clothing) => Debug.Log($"Equipped clothing of type {clothing.itemType} named {clothing.itemName}.");
-        player.OnUnequipClothing += (_, clothing) => Debug.Log($"Unequipped clothing of type {clothing.itemType} named {clothing.itemName}.");
+        player.OnEquipClothing += (_, clothing) => Debug.Log($"Equipped clothing of type {clothing.type} named {clothing.name}.");
+        player.OnUnequipClothing += (_, clothing) => Debug.Log($"Unequipped clothing of type {clothing.type} named {clothing.name}.");
         player.OnAttackChange += player => Debug.Log($"Player's attack changed to {player.attack}");
         player.OnDefenseChange += player => Debug.Log($"Player's defense changed to {player.defense}");
     }
@@ -51,11 +51,11 @@ public class PlayerStatsDebug : MonoBehaviour
             {
                 case ClothingAction.Add:
                     foreach (ShirtSO shirt in shirts)
-                        player.AddShirt(shirt);
+                        player.EquipShirt(shirt);
                     break;
                 case ClothingAction.Remove:
                     foreach (ShirtSO shirt in shirts)
-                        if (!player.RemoveShirt(shirt)) Debug.Log($"Shirt {shirt.itemName} not in list.");
+                        if (!player.UnequipShirt(shirt)) Debug.Log($"Shirt {shirt.name} not in list.");
                     break;
                 case ClothingAction.Get:
                     shirts = new List<ShirtSO>(player.equippedShirts);
@@ -90,7 +90,7 @@ public class PlayerStatsDebug : MonoBehaviour
                         }
                         if (!wasInList)
                         {
-                            player.RemoveShirt(player.equippedShirts[i]);
+                            player.UnequipShirt(player.equippedShirts[i]);
                             i--;
                         }
                     }
@@ -103,7 +103,7 @@ public class PlayerStatsDebug : MonoBehaviour
                     {
                         if (used[i])
                             continue;
-                        player.AddShirt(shirts[i]);
+                        player.EquipShirt(shirts[i]);
                     }
                     break;
             }
@@ -115,11 +115,11 @@ public class PlayerStatsDebug : MonoBehaviour
             {
                 case ClothingAction.Add:
                     foreach (PantsSO pant in pants)
-                        player.AddPants(pant);
+                        player.EquipPants(pant);
                     break;
                 case ClothingAction.Remove:
                     foreach (PantsSO pant in pants)
-                        if (!player.RemovePants(pant)) Debug.Log($"Pants {pant.itemName} not in list.");
+                        if (!player.UnequipPants(pant)) Debug.Log($"Pants {pant.name} not in list.");
                     break;
                 case ClothingAction.Get:
                     pants = new List<PantsSO>(player.equippedPants);
@@ -154,7 +154,7 @@ public class PlayerStatsDebug : MonoBehaviour
                         }
                         if (!wasInList)
                         {
-                            player.RemovePants(player.equippedPants[i]);
+                            player.UnequipPants(player.equippedPants[i]);
                             i--;
                         }
                     }
@@ -167,7 +167,7 @@ public class PlayerStatsDebug : MonoBehaviour
                     {
                         if (used[i])
                             continue;
-                        player.AddPants(pants[i]);
+                        player.EquipPants(pants[i]);
                     }
                     break;
             }
