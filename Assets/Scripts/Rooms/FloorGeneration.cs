@@ -1,3 +1,4 @@
+//using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,16 +16,32 @@ public class FloorGeneration : MonoBehaviour
     [SerializeField] private List<GameObject> roomPrefabs = new List<GameObject>();
 
     [SerializeField] private int roomsToEnd;
+    [SerializeField] private int extraRooms;
 
     private bool generationFailed = false;
     
     void Start()
     {
-        GenerateFloor(10, 20);
+        //GenerateFloor(roomsToEnd, extraRooms);
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            GenerateFloor(roomsToEnd, extraRooms);
+        }
     }
 
     private void GenerateFloor(int minRoomsToEnd, int extraRooms)
     {
+        foreach(KeyValuePair<string, Room> room in placedRooms1)
+        {
+            Destroy(room.Value.gameObject);
+        }
+        placedRooms1.Clear();
+        System.Array.Clear(floorLayout, 0, floorLayout.Length);
+
         currentTile[0] = Random.Range(2, 7);
         currentTile[1] = Random.Range(2, 7);
 
@@ -38,8 +55,12 @@ public class FloorGeneration : MonoBehaviour
             if(generationFailed)
             {
                 generationFailed = false;
+                foreach (KeyValuePair<string, Room> room in placedRooms1)
+                {
+                    Destroy(room.Value.gameObject);
+                }
                 placedRooms1.Clear();
-                floorLayout.Initialize();
+                System.Array.Clear(floorLayout, 0, floorLayout.Length);
 
                 GenerateFloor(minRoomsToEnd, extraRooms);
                 return;

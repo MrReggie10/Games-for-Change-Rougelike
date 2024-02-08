@@ -297,7 +297,8 @@ MonoBehaviour:
   roomPrefabs:
   - {fileID: 3259633976761498087, guid: f1aaea403b174427fbf13959089470cf, type: 3}
   - {fileID: 2117588833274605963, guid: 0ab03747422bf46c5b615a9068ea6bd3, type: 3}
-  roomsToEnd: 0
+  roomsToEnd: 5
+  extraRooms: 5
 --- !u!4 &1280050003
 Transform:
   m_ObjectHideFlags: 0
