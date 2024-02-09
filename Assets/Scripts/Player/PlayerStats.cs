@@ -6,14 +6,23 @@ using GFC.Items;
 
 //this is somewhat a placeholder class so that I can get item stats to work
 //we'll need to decide how to add this to the actual player prefab and whether we want to merge any functionality with other scripts.
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : MonoBehaviour, IMeleeAttackStats, IHealthStats
 {
     public delegate void PlayerEvent(PlayerStats player);
     public delegate void ClothingEvent(PlayerStats player, ClothingSO clothing);
 
+    int IMeleeAttackStats.baseDamage => attack;
+    float IMeleeAttackStats.knockbackForce => effectiveShoes.knockbackForce;
+    float IMeleeAttackStats.knockbackTime => effectiveShoes.knockbackTime;
+    float IMeleeAttackStats.activeTime => effectiveShoes.activeTime;
+    float IMeleeAttackStats.recoveryTime => effectiveShoes.recoveryTime;
+    int IHealthStats.maxHealth => maxHealth;
+    int IHealthStats.defense => defense;
+
+    [SerializeField] int maxHealth = 1000;
     [SerializeField] ShoesSO defaultShoes;
 
-    public int attack => (equippedShoes ? equippedShoes.attackModifier : defaultShoes.attackModifier) + miscAttackMod;
+    public int attack => effectiveShoes.attackModifier + miscAttackMod;
     private int m_miscAttack;
     public int miscAttackMod { get => m_miscAttack; 
         set 
@@ -61,6 +70,7 @@ public class PlayerStats : MonoBehaviour
 
     public HatSO equippedHat { get; private set; }
     public ShoesSO equippedShoes { get; private set; }
+    public ShoesSO effectiveShoes => equippedShoes ? equippedShoes : defaultShoes;
 
     public event ClothingEvent OnEquipClothing;
     public event ClothingEvent OnUnequipClothing;
