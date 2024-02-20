@@ -410,6 +410,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Guy
       objectReference: {fileID: 0}
+    - target: {fileID: 5894637153449415840, guid: 168db156c05c3428eae0f3095de771e2, type: 3}
+      propertyPath: inventoryMenu
+      value: 
+      objectReference: {fileID: 1785238961}
     - target: {fileID: 6249578746411264146, guid: 168db156c05c3428eae0f3095de771e2, type: 3}
       propertyPath: rollMultiplier
       value: 3
@@ -562,6 +566,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 92c6016f39cee0b4eb823bdbcea0c78a, type: 2}
   - {fileID: 11400000, guid: 925207f6af53f2148831975983c421ac, type: 2}
   m_capacity: 6
+--- !u!114 &1785238961 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7260793320624828924, guid: 754dfe8292f2ae0419da5e9aaa3038e7, type: 3}
+  m_PrefabInstance: {fileID: 8645892070916869850}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351d3f6eca4f6f441bbd788954655d07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8645892070916869850
 PrefabInstance:
   m_ObjectHideFlags: 0

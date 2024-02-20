@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
 	private Movement movement;
 	private PlayerStats stats;
 
+	[SerializeField] InventoryMenuManager inventoryMenu;
+
 	private bool attackOnCooldown;
 	private bool dashOnCooldown;
 
@@ -47,6 +49,20 @@ public class PlayerController : MonoBehaviour
 		{
 			movement.sprinting = false;
 		}
+
+		if(Input.GetKeyDown(KeyCode.E))
+        {
+			if(inventoryMenu.enabled)
+            {
+				inventoryMenu.Close();
+				Time.timeScale = 1;
+            }
+			else
+            {
+				inventoryMenu.Open();
+				Time.timeScale = 0;
+            }				
+        }
 	}
 
 	private IEnumerator AttackCooldown()
