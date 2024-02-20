@@ -16,4 +16,8 @@ MonoBehaviour:
   m_description: 
   m_sprite: {fileID: 0}
   m_attackModifier: 5
+  m_knockbackForce: 20
+  m_knockbackTime: 0.5
+  m_activeTime: 0.3
+  m_recoveryTime: 0.6
   m_passives: []

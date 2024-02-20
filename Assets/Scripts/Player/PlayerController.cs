@@ -5,13 +5,20 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 	private MeleeAttack attack;
-	private PlayerMovement movement;
+	private Movement movement;
+	private PlayerStats stats;
+
+	private bool attackOnCooldown;
+	private bool dashOnCooldown;
 
 	// Start is called before the first frame update
-	void Start()
+	void Awake()
 	{
 		attack = GetComponent<MeleeAttack>();
-		movement = GetComponent<PlayerMovement>();
+		movement = GetComponent<Movement>();
+		stats = GetComponent<PlayerStats>();
+		attackOnCooldown = false;
+		dashOnCooldown = false;
 	}
 
 	// Update is called once per frame
@@ -19,16 +26,40 @@ public class PlayerController : MonoBehaviour
 	{
 		if(!attack.attacking)
 		{
-			attack.Aim(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+			attack.AimAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 		}
-		if(Input.GetMouseButtonDown(0))
+		if(Input.GetMouseButtonDown(0) && !attackOnCooldown)
 		{
 			attack.Attack();
+			StartCoroutine(AttackCooldown());
 		}
 		movement.SetInput(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")));
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space) && !dashOnCooldown)
 		{
-			movement.Roll();
+			movement.Dash();
+			StartCoroutine(DashCooldown());
 		}
+		if(Input.GetKey(KeyCode.LeftShift))
+		{
+			movement.sprinting = true;
+		}
+		else
+		{
+			movement.sprinting = false;
+		}
+	}
+
+	private IEnumerator AttackCooldown()
+	{
+		attackOnCooldown = true;
+		yield return new WaitForSeconds(stats.attackCooldown);
+		attackOnCooldown = false;
+	}
+
+	private IEnumerator DashCooldown()
+	{
+		dashOnCooldown = true;
+		yield return new WaitForSeconds(stats.dashCooldown);
+		dashOnCooldown = false;
 	}
 }

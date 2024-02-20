@@ -3,109 +3,120 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeleeEnemy : MonoBehaviour, IEnemy
+[RequireComponent(typeof(Movement), typeof(MeleeAttack), typeof(CombatTarget))]
+public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICombatTargetStats
 {
-    private Rigidbody2D rb;
-    [SerializeField] private Transform attackHitboxCenter;
-    [SerializeField] private GameObject meleeHitbox;
+	public enum State { Walking, Attacking, Stunned }
 
-    [SerializeField] private int health;
+	int IMeleeAttackStats.attackPower => damage;
+	float IMeleeAttackStats.knockbackTime => knockbackTime;
+	float IMeleeAttackStats.knockbackPower => knockbackForce;
+	float IMeleeAttackStats.activeTime => attackTime;
+	CombatTargetType IMeleeAttackStats.targetType => CombatTargetType.Player;
+	float IMovementStats.baseSpeed => speed;
+	float IMovementStats.baseAcceleration => state == State.Walking ? acceleration : friction;
+	float IMovementStats.friction => friction;
+	float IMovementStats.knockbackResistanceDuration => knockbackResistanceTime;
+	float IMovementStats.sprintSpeedMult => 1;
+	float IMovementStats.sprintAccelMult => 1;
+	float IMovementStats.dashSpeedMult => lungeSpeedMult;
+	float IMovementStats.dashDuration => initialLungeDistance/(speed*lungeSpeedMult);
+	int ICombatTargetStats.maxHealth => maxHealth;
+	int ICombatTargetStats.defense => defense;
+	bool ICombatTargetStats.invuln => false;
+	CombatTargetType ICombatTargetStats.type => CombatTargetType.Enemy;
 
-    [SerializeField] private float speed;
+	private MeleeAttack attack;
+	private Movement movement;
+	private CombatTarget combatTarget;
 
-    [SerializeField] private int damage;
-    [SerializeField] private float attackDistance;
-    [SerializeField] private float attackWindupTime;
-    [SerializeField] private float attackTime;
-    private bool attacking;
+	[SerializeField] private int maxHealth = 200;
+	[SerializeField] private int defense = 0;
+	[Space]
+	[SerializeField] private float speed = 5;
+	[SerializeField] private float acceleration = 100;
+	[SerializeField] private float friction = 20;
+	[SerializeField] private float lungeSpeedMult = 4;
+	[SerializeField] private float initialLungeDistance = 3;
+	[SerializeField] private float knockbackResistanceTime = 0.5f;
+	[Space]
+	[SerializeField] private int damage = 50;
+	[SerializeField] private float knockbackTime = 0.4f;
+	[SerializeField] private float knockbackForce = 30;
+	[SerializeField] private float attackDistance = 5;
+	[SerializeField] private float attackWindupTime = 0.5f;
+	[SerializeField] private float attackTime = 0.75f;
+	[SerializeField] private float attackInterval = 2.5f;
+	private bool attackOnCooldown;
 
-    public IEnemy.entityState entityState = IEnemy.entityState.freeMove;
+	public State state;
 
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
+	private Coroutine stunCoroutine;
+	private Coroutine attackCoroutine;
+	private Coroutine cooldownCoroutine;
 
-    void Update()
-    {
-        if(entityState == IEnemy.entityState.freeMove)
-        {
-            if(Vector2.Distance(transform.position, PlayerSingleton.player.transform.position) < attackDistance && !attacking)
-            {
-                StartCoroutine(AttackCycle());
-            }
+	private void Awake()
+	{
+		attack = GetComponent<MeleeAttack>();
+		movement = GetComponent<Movement>();
+		combatTarget = GetComponent<CombatTarget>();
+		movement.OnStun += time => { if(stunCoroutine != null) StopCoroutine(stunCoroutine); stunCoroutine = StartCoroutine(ActivateStun(time)); };
+		state = State.Walking;
+	}
 
-            if (attacking)
-            {
-                rb.velocity = Vector2.zero;
-            }
-            else
-            {
-                rb.velocity = (PlayerSingleton.player.transform.position - transform.position).normalized * speed;
-            }
-        }
-    }
+	void Update()
+	{
+		switch(state)
+		{
+			case State.Walking:
+				movement.SetInput((PlayerSingleton.player.transform.position - transform.position).normalized);
+				if (Vector2.Distance(transform.position, PlayerSingleton.player.transform.position) < attackDistance && !attackOnCooldown)
+				{
+					attackCoroutine = StartCoroutine(AttackCycle());
+				}
+				break;
+		}
+	}
 
-    public void Damage(int damage, float knockbackTime, float knockbackForce)
-    {
-        health -= damage;
-        if(health <= 0)
-        {
-            Die();
-        }
+	public IEnumerator ActivateStun(float secondsActive)
+	{
+		if (attackCoroutine != null)
+            StopCoroutine(attackCoroutine);
+		attack.CancelAttack();
+		movement.SetInput(Vector2.zero);
+		state = State.Stunned;
 
-        StartCoroutine(ActivateStun(knockbackTime));
-        Vector2 direction = (transform.position - PlayerSingleton.player.transform.position).normalized;
-        rb.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
-    }
+		yield return new WaitForSeconds(secondsActive);
 
-    public IEnumerator ActivateStun(float secondsActive)
-    {
-        rb.velocity = Vector2.zero;
-        entityState = IEnemy.entityState.stun;
+		state = State.Walking;
+	}
 
-        yield return new WaitForSeconds(secondsActive);
+	private IEnumerator AttackCycle()
+	{
+		cooldownCoroutine = StartCoroutine(AttackCooldown());
+		state = State.Attacking;
+		movement.SetInput(Vector2.zero);
+		Debug.Log("Wind-up");
+		yield return new WaitForSeconds(attackWindupTime);
 
-        entityState = IEnemy.entityState.freeMove;
-    }
+		Vector3 playerPos = PlayerSingleton.player.transform.position;
+		attack.AimAt(playerPos);
+		attack.Attack();
+		movement.SetInput((playerPos - transform.position).normalized);
+		movement.Dash();
+		movement.SetInput(Vector2.zero);
+		Debug.Log("Attack");
 
-    private void Die()
-    {
-        //drop loot
+		yield return new WaitForSeconds(attackTime);
 
-        Destroy(gameObject);
-    }
+		Debug.Log("Attack finished");
+		state = State.Walking;
+	}
 
-    private IEnumerator AttackCycle()
-    {
-        attacking = true;
-        Vector3 playerPos = PlayerSingleton.player.transform.position;
-        playerPos.z = 5.23f;
-
-        Vector3 objectPos = transform.position;
-        playerPos.x = playerPos.x - objectPos.x;
-        playerPos.y = playerPos.y - objectPos.y;
-
-        float angle = Mathf.Atan2(playerPos.y, playerPos.x) * Mathf.Rad2Deg;
-        attackHitboxCenter.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-
-        yield return new WaitForSeconds(attackWindupTime);
-
-        meleeHitbox.SetActive(true);
-        List<Collider2D> overlapColliders = new List<Collider2D>();
-        meleeHitbox.GetComponent<CapsuleCollider2D>().OverlapCollider(new ContactFilter2D().NoFilter(), overlapColliders);
-
-        foreach (Collider2D collider in overlapColliders)
-        {
-            if (collider.GetComponent<Health>() != null)
-            {
-                collider.GetComponent<Health>().Damage(damage);
-            }
-        }
-
-        yield return new WaitForSeconds(attackTime);
-
-        attacking = false;
-        meleeHitbox.SetActive(false);
-    }
+	private IEnumerator AttackCooldown()
+	{
+		attackOnCooldown = true;
+		yield return new WaitForSeconds(attackInterval);
+		attackOnCooldown = false;
+	}
 }

@@ -5,14 +5,15 @@ using UnityEngine;
 
 public interface IMeleeAttackStats
 {
-	public int baseDamage { get; }
+	public int attackPower { get; }
 	public float knockbackTime { get; }
-	public float knockbackForce { get; }
+	public float knockbackPower { get; }
 
 	public float activeTime { get; }
-	public float recoveryTime { get; }
-}
 
+	public CombatTargetType targetType { get; }
+}
+[RequireComponent(typeof(IMeleeAttackStats))]
 public class MeleeAttack : MonoBehaviour
 {
 	[SerializeField] private Transform attackHitboxCenter;
@@ -20,39 +21,48 @@ public class MeleeAttack : MonoBehaviour
 
 	private bool m_attacking = false;
 	public bool attacking => m_attacking;
-	private bool m_canAttack = true;
-	public bool canAttack => m_canAttack;
+	private Vector2 aimDirection;
 
 	private IMeleeAttackStats stats;
+
+	private Coroutine attackCoroutine;
 
 	private void Awake()
 	{
 		stats = GetComponent<IMeleeAttackStats>();
 	}
 
-	public void Aim(Vector2 targetPos)
+	public void AimAt(Vector2 targetPos)
 	{
 		Vector2 objectPos = transform.position;
 		Vector2 targetOffset = targetPos - objectPos;
+		AimInDirection(targetOffset);
+	}
 
-		float angle = Mathf.Atan2(targetOffset.y, targetOffset.x) * Mathf.Rad2Deg;
+	public void AimInDirection(Vector2 direction)
+	{
+		aimDirection = direction.normalized;
+		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 		attackHitboxCenter.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 	}
 
-	public void Attack(bool ignoreCooldown = false)
+	public void Attack()
 	{
-		if (m_canAttack || ignoreCooldown)
-		{
-			StopAllCoroutines();
-			StartCoroutine(Attack_Internal());
-		}
+		CancelAttack();
+		attackCoroutine = StartCoroutine(Attack_Internal());
+	}
+
+	public void CancelAttack()
+	{
+		if (attackCoroutine != null)
+			StopCoroutine(attackCoroutine);
+		meleeHitbox.SetActive(false);
+		m_attacking = false;
 	}
 
 	private IEnumerator Attack_Internal()
 	{
 		m_attacking = true;
-		m_canAttack = false;
-		StartCoroutine(KickTimer());
 
 		meleeHitbox.SetActive(true);
 		List<Collider2D> overlapColliders = new List<Collider2D>();
@@ -60,21 +70,22 @@ public class MeleeAttack : MonoBehaviour
 		
 		foreach(Collider2D collider in overlapColliders)
 		{
-			if(collider.GetComponent<IEnemy>() != null)
+			CombatTarget target = collider.GetComponent<CombatTarget>();
+			if (target != null && target.type == stats.targetType)
 			{
-				collider.GetComponent<IEnemy>().Damage(stats.baseDamage, stats.knockbackTime, stats.knockbackForce);
+				DamageInfo info = new DamageInfo
+				{
+					attackPower = stats.attackPower,
+					knockbackForce = stats.knockbackPower * aimDirection,
+					knockbackTime = stats.knockbackTime
+				};
+				collider.GetComponent<CombatTarget>().Damage(info);
 			}
 		}
 
 		yield return new WaitForSeconds(stats.activeTime);
 
 		m_attacking = false;
-	}
-
-	private IEnumerator KickTimer()
-	{
-		yield return new WaitForSeconds(stats.recoveryTime);
-
-		m_canAttack = true;
+		meleeHitbox.SetActive(false);
 	}
 }

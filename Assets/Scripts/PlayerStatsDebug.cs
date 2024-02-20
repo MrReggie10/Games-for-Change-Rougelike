@@ -26,7 +26,7 @@ public class PlayerStatsDebug : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Q))
+        if(Input.GetKeyDown(KeyCode.U))
         {
             //hat
             switch (action)
@@ -44,7 +44,7 @@ public class PlayerStatsDebug : MonoBehaviour
                     goto case ClothingAction.Add;
             }
         }
-        if(Input.GetKeyDown(KeyCode.W))
+        if(Input.GetKeyDown(KeyCode.I))
         {
             //shirts
             switch(action)
@@ -108,7 +108,7 @@ public class PlayerStatsDebug : MonoBehaviour
                     break;
             }
         }
-        if(Input.GetKeyDown(KeyCode.E))
+        if(Input.GetKeyDown(KeyCode.O))
         {
             //pants
             switch (action)
@@ -172,7 +172,7 @@ public class PlayerStatsDebug : MonoBehaviour
                     break;
             }
         }
-        if(Input.GetKeyDown(KeyCode.R))
+        if(Input.GetKeyDown(KeyCode.P))
         {
             //shoes
             switch(action)

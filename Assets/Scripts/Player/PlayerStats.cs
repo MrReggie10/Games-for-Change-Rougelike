@@ -6,20 +6,43 @@ using GFC.Items;
 
 //this is somewhat a placeholder class so that I can get item stats to work
 //we'll need to decide how to add this to the actual player prefab and whether we want to merge any functionality with other scripts.
-public class PlayerStats : MonoBehaviour, IMeleeAttackStats, IHealthStats
+public class PlayerStats : MonoBehaviour, IMeleeAttackStats, ICombatTargetStats, IMovementStats
 {
     public delegate void PlayerEvent(PlayerStats player);
     public delegate void ClothingEvent(PlayerStats player, ClothingSO clothing);
 
-    int IMeleeAttackStats.baseDamage => attack;
-    float IMeleeAttackStats.knockbackForce => effectiveShoes.knockbackForce;
+    int IMeleeAttackStats.attackPower => attack;
+    float IMeleeAttackStats.knockbackPower => effectiveShoes.knockbackForce;
     float IMeleeAttackStats.knockbackTime => effectiveShoes.knockbackTime;
     float IMeleeAttackStats.activeTime => effectiveShoes.activeTime;
-    float IMeleeAttackStats.recoveryTime => effectiveShoes.recoveryTime;
-    int IHealthStats.maxHealth => maxHealth;
-    int IHealthStats.defense => defense;
+    CombatTargetType IMeleeAttackStats.targetType => CombatTargetType.Enemy;
+    int ICombatTargetStats.maxHealth => maxHealth;
+    int ICombatTargetStats.defense => defense;
+    bool ICombatTargetStats.invuln => false;
+    float IMovementStats.baseSpeed => baseSpeed;
+    float IMovementStats.baseAcceleration => baseAcceleration;
+    float IMovementStats.friction => friction;
+    float IMovementStats.knockbackResistanceDuration => knockbackResistanceTime;
+    float IMovementStats.sprintSpeedMult => sprintSpeedMultiplier;
+    float IMovementStats.sprintAccelMult => sprintAccelerationMultiplier;
+    float IMovementStats.dashSpeedMult => rollSpeedMultiplier;
+    float IMovementStats.dashDuration => rollDuration;
+    CombatTargetType ICombatTargetStats.type => CombatTargetType.Player;
+    public float attackCooldown => effectiveShoes.recoveryTime;
+    public float dashCooldown => rollCooldown;
 
     [SerializeField] int maxHealth = 1000;
+    [Space]
+    [SerializeField] float baseSpeed = 7;
+    [SerializeField] float baseAcceleration = 100;
+    [SerializeField] float friction = 40;
+    [SerializeField] float knockbackResistanceTime;
+    [SerializeField] float sprintSpeedMultiplier = 2;
+    [SerializeField] float sprintAccelerationMultiplier = 2;
+    [SerializeField] float rollSpeedMultiplier = 3;
+    [SerializeField] float rollDuration = 0.3f;
+    [SerializeField] float rollCooldown = 0.5f;
+    [Space]
     [SerializeField] ShoesSO defaultShoes;
 
     public int attack => effectiveShoes.attackModifier + miscAttackMod;

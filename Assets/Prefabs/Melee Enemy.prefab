@@ -131,8 +131,11 @@ GameObject:
   - component: {fileID: 6001825884991962005}
   - component: {fileID: 900193798485914825}
   - component: {fileID: 444224801220152153}
-  - component: {fileID: 1742324924008292857}
   - component: {fileID: 6129292842243160358}
+  - component: {fileID: 8550814217679446763}
+  - component: {fileID: 3039379259864761830}
+  - component: {fileID: 8643680492664163724}
+  - component: {fileID: 1742324924008292857}
   m_Layer: 7
   m_Name: Melee Enemy
   m_TagString: Untagged
@@ -253,27 +256,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1742324924008292857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5527256069166259853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b79b9f2e62b6549a186698d4c0c79e0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackHitboxCenter: {fileID: 8810994811826470602}
-  meleeHitbox: {fileID: 395414066880442884}
-  health: 500
-  speed: 4
-  damage: 30
-  attackDistance: 2
-  attackWindupTime: 0.5
-  attackTime: 0.1
-  entityState: 0
 --- !u!50 &6129292842243160358
 Rigidbody2D:
   serializedVersion: 4
@@ -301,6 +283,72 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &8550814217679446763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5527256069166259853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d460b9e2bd7548d2bb081bee300b50a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprinting: 0
+--- !u!114 &3039379259864761830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5527256069166259853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e35a2d3c0c540be8d2466fce34e0b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackHitboxCenter: {fileID: 8810994811826470602}
+  meleeHitbox: {fileID: 395414066880442884}
+--- !u!114 &8643680492664163724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5527256069166259853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c95a8aeddddca48fdbc5535f235be42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1742324924008292857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5527256069166259853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b79b9f2e62b6549a186698d4c0c79e0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 500
+  defense: 0
+  speed: 4
+  acceleration: 100
+  friction: 20
+  lungeSpeedMult: 0
+  initialLungeDistance: 0
+  damage: 30
+  knockbackTime: 0
+  knockbackForce: 0
+  attackDistance: 2
+  attackWindupTime: 0.5
+  attackTime: 0.1
+  attackInterval: 0
+  state: 0
 --- !u!1 &7116927775835591487
 GameObject:
   m_ObjectHideFlags: 0
