@@ -12,6 +12,10 @@ namespace GFC.Items
         [SerializeField] string m_description;
         [SerializeField] Sprite m_sprite;
         [SerializeField] int m_attackModifier;
+        [SerializeField] float m_knockbackForce;
+        [SerializeField] float m_knockbackTime;
+        [SerializeField] float m_activeTime = 0.3f;
+        [SerializeField] float m_recoveryTime = 0.6f;
         [SerializeField] List<PassiveAbility> m_passives;
 
         public override ItemType type => ItemType.Shoes;
@@ -21,6 +25,10 @@ namespace GFC.Items
         public override Sprite inventorySprite => m_sprite;
         public override IReadOnlyList<PassiveAbility> passives => m_passives;
         public int attackModifier => m_attackModifier;
+        public float knockbackForce => m_knockbackForce;
+        public float knockbackTime => m_knockbackTime;
+        public float activeTime => m_activeTime;
+        public float recoveryTime => m_recoveryTime;
 
         public override bool Use(PlayerStats player, PlayerInventory inventory)
         {

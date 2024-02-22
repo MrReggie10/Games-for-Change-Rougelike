@@ -34,11 +34,6 @@ public class InventoryMenuManager : MonoBehaviour
         InitInventoryButtons(6);
     }
 
-    private void Start()
-    {
-        Open();
-    }
-
     void InitEquipmentButtons()
     {
         hatButton.SetClickCallback(UnequipHat);
@@ -83,11 +78,13 @@ public class InventoryMenuManager : MonoBehaviour
         description.ClearDisplay();
         updateItemsAtEOF = false;
         enabled = true;
+        gameObject.SetActive(true);
     }
 
     public void Close()
     {
         enabled = false;
+        gameObject.SetActive(false);
     }
 
     public void UpdateEquipment()

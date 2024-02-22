@@ -15,5 +15,9 @@ MonoBehaviour:
   m_name: Boots
   m_description: 
   m_sprite: {fileID: 21300000, guid: 86a1b2d660f04fa4a8a9b68658ddf54c, type: 3}
-  m_attackModifier: 12
+  m_attackModifier: 220
+  m_knockbackForce: 35
+  m_knockbackTime: 0.65
+  m_activeTime: 0.5
+  m_recoveryTime: 1
   m_passives: []
