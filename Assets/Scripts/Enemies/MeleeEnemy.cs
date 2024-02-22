@@ -14,7 +14,7 @@ public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICom
 	float IMeleeAttackStats.activeTime => attackTime;
 	CombatTargetType IMeleeAttackStats.targetType => CombatTargetType.Player;
 	float IMovementStats.baseSpeed => speed;
-	float IMovementStats.baseAcceleration => state == State.Walking ? acceleration : friction;
+	float IMovementStats.baseAcceleration => acceleration;
 	float IMovementStats.friction => friction;
 	float IMovementStats.knockbackResistanceDuration => knockbackResistanceTime;
 	float IMovementStats.sprintSpeedMult => 1;

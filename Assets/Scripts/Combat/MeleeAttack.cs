@@ -13,6 +13,8 @@ public interface IMeleeAttackStats
 
 	public CombatTargetType targetType { get; }
 }
+
+//TODO: Change hit detection to be active the entire time the attack is out, rather than only when it's first activated (make sure it doesn't rehit anyone)
 [RequireComponent(typeof(IMeleeAttackStats))]
 public class MeleeAttack : MonoBehaviour
 {

@@ -19,7 +19,7 @@ public struct DamageInfo
 }
 
 [Flags]
-public enum CombatTargetType { Player, Enemy }
+public enum CombatTargetType { Untargetable = 0, Player = 1, Enemy = 2, placeholder = 4 } //all values should be powers of 2 (placeholder is there just to show that)
 
 [RequireComponent(typeof(ICombatTargetStats))]
 public class CombatTarget : MonoBehaviour

@@ -21,12 +21,29 @@ public class PlayerController : MonoBehaviour
 		stats = GetComponent<PlayerStats>();
 		attackOnCooldown = false;
 		dashOnCooldown = false;
+		if (inventoryMenu)
+			inventoryMenu.Close();
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if(!attack.attacking)
+		if (Input.GetKeyDown(KeyCode.E))
+		{
+			if (inventoryMenu.enabled)
+			{
+				inventoryMenu.Close();
+				Time.timeScale = 1;
+			}
+			else
+			{
+				inventoryMenu.Open();
+				Time.timeScale = 0;
+			}
+		}
+		if (inventoryMenu.enabled)
+			return;
+		if (!attack.attacking)
 		{
 			attack.AimAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 		}
@@ -49,20 +66,6 @@ public class PlayerController : MonoBehaviour
 		{
 			movement.sprinting = false;
 		}
-
-		if(Input.GetKeyDown(KeyCode.E))
-        {
-			if(inventoryMenu.enabled)
-            {
-				inventoryMenu.Close();
-				Time.timeScale = 1;
-            }
-			else
-            {
-				inventoryMenu.Open();
-				Time.timeScale = 0;
-            }				
-        }
 	}
 
 	private IEnumerator AttackCooldown()

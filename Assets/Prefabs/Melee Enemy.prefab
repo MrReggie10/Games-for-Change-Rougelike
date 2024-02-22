@@ -334,20 +334,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b79b9f2e62b6549a186698d4c0c79e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 500
+  maxHealth: 200
   defense: 0
   speed: 4
   acceleration: 100
   friction: 20
-  lungeSpeedMult: 0
-  initialLungeDistance: 0
-  damage: 30
-  knockbackTime: 0
-  knockbackForce: 0
-  attackDistance: 2
+  lungeSpeedMult: 4
+  initialLungeDistance: 3
+  knockbackResistanceTime: 0.75
+  damage: 100
+  knockbackTime: 0.4
+  knockbackForce: 30
+  attackDistance: 5
   attackWindupTime: 0.5
-  attackTime: 0.1
-  attackInterval: 0
+  attackTime: 0.75
+  attackInterval: 2.5
   state: 0
 --- !u!1 &7116927775835591487
 GameObject:

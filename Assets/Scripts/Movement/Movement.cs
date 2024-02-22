@@ -16,7 +16,7 @@ public interface IMovementStats
 	public float dashSpeedMult { get; }
 	public float dashDuration { get; }
 }
-//TODO: Implement stun and knockback resistance timers
+
 [RequireComponent(typeof(IMovementStats))]
 public class Movement : MonoBehaviour
 {
@@ -49,6 +49,10 @@ public class Movement : MonoBehaviour
 	private void FixedUpdate()
 	{
 		ApplyMovement();
+		if (stunTimer > 0)
+			stunTimer -= Time.fixedDeltaTime;
+		if (knockbackResistanceTimer > 0)
+			knockbackResistanceTimer -= Time.fixedDeltaTime;
 	}
 
 	public void SetInput(Vector2 direction, bool clampMagnitude = true)
@@ -62,25 +66,35 @@ public class Movement : MonoBehaviour
 	{
 		if (dashing)
 		{
+			//no acceleration
 			rb.velocity = stats.baseSpeed * stats.dashSpeedMult * dashDirection;
-		}
-		else if (sprinting)
-		{
-			Vector2 targetSpeed = stats.baseSpeed * stats.sprintSpeedMult * m_moveInput;
-			Vector2 speedDiff = targetSpeed - rb.velocity;
-			if (speedDiff.magnitude < stats.baseAcceleration * stats.sprintAccelMult * Time.fixedDeltaTime)
-				rb.velocity = targetSpeed;
-			else
-				rb.velocity += stats.baseAcceleration * stats.sprintAccelMult * Time.fixedDeltaTime * speedDiff.normalized;
 		}
 		else
 		{
-			Vector2 targetSpeed = stats.baseSpeed * m_moveInput;
+			Vector2 targetSpeed;
+			float acceleration;
+			if(stunned)
+            {
+				targetSpeed = Vector2.zero;
+				acceleration = 0;
+            }
+			else if (sprinting)
+			{
+				targetSpeed = stats.baseSpeed * stats.sprintSpeedMult * m_moveInput;
+				acceleration = stats.baseAcceleration * stats.sprintAccelMult;
+			}
+			else
+			{
+				targetSpeed = stats.baseSpeed * m_moveInput;
+				acceleration = stats.baseAcceleration;
+			}
 			Vector2 speedDiff = targetSpeed - rb.velocity;
-			if (speedDiff.magnitude < stats.baseAcceleration * Time.fixedDeltaTime)
+			if (Vector2.Dot(speedDiff, rb.velocity) < 0) //if speedDiff and rb.velocity are in opposite directions (decelerating)
+				acceleration += stats.friction;
+			if (speedDiff.magnitude < acceleration * Time.fixedDeltaTime)
 				rb.velocity = targetSpeed;
 			else
-				rb.velocity += stats.baseAcceleration * Time.fixedDeltaTime * speedDiff.normalized;
+				rb.velocity += acceleration * Time.fixedDeltaTime * speedDiff.normalized;
 		}
 	}
 

@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8558049868214872879
 Transform:
   m_ObjectHideFlags: 0
@@ -349,6 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ed50a03d32f41a4aa60ecebc29fe06d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventoryMenu: {fileID: 0}
 --- !u!114 &3547684022331672609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,10 +364,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 1000
   baseSpeed: 7
+  baseAcceleration: 100
+  friction: 40
+  knockbackResistanceTime: 4
   sprintSpeedMultiplier: 2
-  dashSpeedMultipler: 3
-  dashDuration: 0.3
-  dashRecoveryTime: 0.5
+  sprintAccelerationMultiplier: 2
+  rollSpeedMultiplier: 3
+  rollDuration: 0.3
+  rollCooldown: 0.5
   defaultShoes: {fileID: 11400000, guid: 395f96fd8b18ac14384cd5e3e09ad07d, type: 2}
   useHardLimit: 1
   effectiveShirts: 3
