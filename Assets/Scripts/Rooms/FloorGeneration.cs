@@ -117,7 +117,7 @@ public class FloorGeneration : MonoBehaviour
 
         foreach(Room room in placedRooms1.Values)
         {
-            if(room.mapXPos == currentTile[0] && room.mapYPos == currentTile[1])
+            if(room.mapPos.x == currentTile[0] && room.mapPos.y == currentTile[1])
             {
                 if (selectedDirection == 0)
                 {
@@ -150,10 +150,10 @@ public class FloorGeneration : MonoBehaviour
 
     private Room PlaceRoom(int roomNumber)
     {
-        GameObject currentRoom = Instantiate(roomPrefabs[roomNumber], new Vector3(currentTile[0] * 36, currentTile[1] * 20, 0), Quaternion.identity);
-        currentRoom.GetComponent<Room>().SetLocation(currentTile[0], currentTile[1]);
+        Room currentRoom = Instantiate(roomPrefabs[roomNumber], new Vector3(currentTile[0] * 36, currentTile[1] * 20, 0), Quaternion.identity).GetComponent<Room>();
+        currentRoom.SetLocation(new Vector2Int(currentTile[0], currentTile[1]));
         floorLayout[currentTile[0], currentTile[1]] = 1;
-        placedRooms1.Add(currentTile[0] + " " + currentTile[1] , currentRoom.GetComponent<Room>());
-        return currentRoom.GetComponent<Room>();
+        placedRooms1.Add(currentTile[0] + " " + currentTile[1] , currentRoom);
+        return currentRoom;
     }
 }

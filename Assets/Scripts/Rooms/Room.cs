@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum RoomType { Normal, Start, Boss }
+
 public class Room : MonoBehaviour
 {
     public GameObject topBarrier;
@@ -9,17 +11,39 @@ public class Room : MonoBehaviour
     public GameObject bottomBarrier;
     public GameObject leftBarrier;
 
+    [SerializeField] private List<GameObject> enemies;
     [SerializeField] private Collider2D exitHitbox;
 
-    [HideInInspector] public int mapXPos;
-    [HideInInspector] public int mapYPos;
+    [HideInInspector] public Vector2Int mapPos;
+    [field: SerializeField] public RoomType roomType { get; private set; }
 
-    public List<SpriteRenderer> renderers = new List<SpriteRenderer>();
-    
-    public void SetLocation(int x, int y)
+    public List<SpriteRenderer> renderers;
+
+    public void Init()
     {
-        mapXPos = x;
-        mapYPos = y;
+        foreach (GameObject enemy in enemies)
+            enemy.SetActive(false);
+    }
+    
+    public void SetLocation(Vector2Int mapPos)
+    {
+        this.mapPos = mapPos;
+    }
+
+    public void SetDoors(bool[] doorOpenings)
+    {
+        Debug.LogError("SetDoors not implemented.");
+    }
+
+    public void ToggleDoor(int doorIndex)
+    {
+        Debug.LogError("ToggleDoor not implemented.");
+    }
+
+    public void Enter()
+    {
+        foreach (GameObject enemy in enemies)
+            enemy.SetActive(true);
     }
 
     private void Update()
