@@ -15,9 +15,7 @@ public class Room : MonoBehaviour
     [SerializeField] private Collider2D exitHitbox;
 
     [HideInInspector] public Vector2Int mapPos;
-    [field: SerializeField] public RoomType roomType { get; private set; }
-
-    public List<SpriteRenderer> renderers;
+    public RoomType roomType;
 
     public void Init()
     {
