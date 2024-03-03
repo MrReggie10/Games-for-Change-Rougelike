@@ -37,7 +37,7 @@ public class Projectile : MonoBehaviour
 				overlapColliders[0].GetComponent<CombatTarget>().Damage(info);
 			}
 			if(target != null)
-				if(target.gameObject.layer != 8)
+				if(target.gameObject.layer != 8 && target.gameObject.layer != 7)
 					Destroy(gameObject);
 		}
 	}

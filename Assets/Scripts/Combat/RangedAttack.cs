@@ -76,11 +76,9 @@ public class RangedAttack : MonoBehaviour
 				Projectile projectile = Instantiate(projectilePrefab, transform.position + new Vector3(xComp, yComp), Quaternion.identity).GetComponent<Projectile>();
 				projectile.angle = attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2);
 				projectile.stats = stats;
-				Debug.Log("this should print 9 times");
 			}
 
 			yield return new WaitForSeconds(stats.timeBetweenVolleys);
-			Debug.Log("this should print 3 times");
 		}
 
 		m_attacking = false;

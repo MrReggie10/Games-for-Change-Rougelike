@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Movement), typeof(MeleeAttack), typeof(CombatTarget))]
+[RequireComponent(typeof(Movement), typeof(RangedAttack), typeof(CombatTarget))]
 public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, ICombatTargetStats
 {
 	public enum State { Walking, Attacking, Stunned }
