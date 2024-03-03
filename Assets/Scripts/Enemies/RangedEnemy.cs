@@ -107,7 +107,6 @@ public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, IC
 		yield return new WaitForSeconds(attackWindupTime);
 
 		Vector3 playerPos = PlayerSingleton.player.transform.position;
-		attack.AimAt(playerPos);
 		attack.Attack();
 		//Debug.Log("Attack");
 

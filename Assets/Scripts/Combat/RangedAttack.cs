@@ -67,11 +67,10 @@ public class RangedAttack : MonoBehaviour
 		m_attacking = true;
 
 		for(int i = 0; i < stats.numVolleys; i++)
-        {
+		{
+			AimAt(PlayerSingleton.player.transform.position);
 			for (int j = 0; j < stats.projectilesPerVolley; j++)
 			{
-				//float xComp = Mathf.Cos(attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2));
-				//float yComp = Mathf.Sin(attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2));
 				float xComp = Mathf.Cos(Mathf.Deg2Rad * (attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2)));
 				float yComp = Mathf.Sin(Mathf.Deg2Rad * (attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2)));
 				Projectile projectile = Instantiate(projectilePrefab, transform.position + new Vector3(xComp, yComp), Quaternion.identity).GetComponent<Projectile>();
