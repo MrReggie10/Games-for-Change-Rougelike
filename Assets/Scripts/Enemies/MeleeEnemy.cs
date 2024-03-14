@@ -61,6 +61,7 @@ public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICom
 		movement = GetComponent<Movement>();
 		combatTarget = GetComponent<CombatTarget>();
 		movement.OnStun += time => { if(stunCoroutine != null) StopCoroutine(stunCoroutine); stunCoroutine = StartCoroutine(ActivateStun(time)); };
+		combatTarget.OnDeath += delegate { Destroy(gameObject); };
 		state = State.Walking;
 	}
 

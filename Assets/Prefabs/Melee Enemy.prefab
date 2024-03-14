@@ -341,14 +341,14 @@ MonoBehaviour:
   friction: 20
   lungeSpeedMult: 4
   initialLungeDistance: 3
-  knockbackResistanceTime: 0.75
+  knockbackResistanceTime: 2
   damage: 100
   knockbackTime: 0.4
   knockbackForce: 30
   attackDistance: 5
-  attackWindupTime: 0.5
+  attackWindupTime: 1
   attackTime: 0.75
-  attackInterval: 2.5
+  attackInterval: 4
   state: 0
 --- !u!1 &7116927775835591487
 GameObject:
