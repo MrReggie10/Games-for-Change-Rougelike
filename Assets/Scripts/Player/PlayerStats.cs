@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using GFC.Items;
 
-//this is somewhat a placeholder class so that I can get item stats to work
-//we'll need to decide how to add this to the actual player prefab and whether we want to merge any functionality with other scripts.
 public class PlayerStats : MonoBehaviour, IMeleeAttackStats, ICombatTargetStats, IMovementStats
 {
     public delegate void PlayerEvent(PlayerStats player);
