@@ -6,49 +6,75 @@ public enum RoomType { Normal, Start, Boss }
 
 public class Room : MonoBehaviour
 {
-    public GameObject topBarrier;
-    public GameObject rightBarrier;
-    public GameObject bottomBarrier;
-    public GameObject leftBarrier;
-
     [SerializeField] private List<GameObject> enemies;
-    [SerializeField] private Collider2D exitHitbox;
+    public List<Door> connectedDoors;
 
-    [HideInInspector] public Vector2Int mapPos;
+    public Vector2Int mapPos;
+    [SerializeField] Vector2Int m_size;
+    public Vector2Int size => m_size;
     public RoomType roomType;
+    public bool isCleared { get; private set; }
+
+    private void Start()
+    {
+        Init();
+        if (roomType == RoomType.Start)
+            GameManager.instance.RoomChangeTrigger(this);
+    }
 
     public void Init()
     {
-        foreach (GameObject enemy in enemies)
+        for(int i = 0; i < enemies.Count; i++)
+        {
+            GameObject enemy = enemies[i];
+            enemy.GetComponent<CombatTarget>().OnDeath += delegate { enemies.Remove(enemy); if (enemies.Count == 0) Clear(); };
             enemy.SetActive(false);
+        }
+        if (enemies.Count == 0)
+            isCleared = true;
     }
-    
+
     public void SetLocation(Vector2Int mapPos)
     {
         this.mapPos = mapPos;
     }
 
-    public void SetDoors(bool[] doorOpenings)
+    public bool Enter()
     {
-        Debug.LogError("SetDoors not implemented.");
-    }
-
-    public void ToggleDoor(int doorIndex)
-    {
-        Debug.LogError("ToggleDoor not implemented.");
-    }
-
-    public void Enter()
-    {
+        if (isCleared)
+            return false;
         foreach (GameObject enemy in enemies)
             enemy.SetActive(true);
+        LockDoors();
+        return true;
     }
 
-    private void Update()
+    public void DisableEnemies()
     {
-        if (exitHitbox.IsTouching(PlayerSingleton.player.GetComponent<Collider2D>()))
+        foreach (GameObject enemy in enemies)
+            enemy.SetActive(false);
+    }
+
+    public void LockDoors()
+    {
+        foreach(Door door in connectedDoors)
         {
-            Camera.main.transform.position = new Vector3(Vector2.Lerp(Camera.main.transform.position, transform.position, 0.125f).x, Vector2.Lerp(Camera.main.transform.position, transform.position, 0.125f).y, -10);
+            door.Lock();
         }
+    }
+
+    public void UnlockDoors()
+    {
+        foreach (Door door in connectedDoors)
+        {
+            door.Unlock();
+        }
+    }
+
+    public void Clear()
+    {
+        isCleared = true;
+        GameManager.instance.EndBattle();
+        UnlockDoors();
     }
 }
