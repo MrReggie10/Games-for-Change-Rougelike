@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Movement), typeof(MeleeAttack), typeof(CombatTarget))]
-public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICombatTargetStats
+public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICombatTargetStats, IEnemyRepelStats
 {
 	public enum State { Walking, Attacking, Stunned }
 
@@ -25,10 +25,12 @@ public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICom
 	int ICombatTargetStats.defense => defense;
 	bool ICombatTargetStats.invuln => false;
 	CombatTargetType ICombatTargetStats.type => CombatTargetType.Enemy;
+    float IEnemyRepelStats.repelDist => repelHitboxSize;
 
-	private MeleeAttack attack;
+    private MeleeAttack attack;
 	private Movement movement;
 	private CombatTarget combatTarget;
+	private EnemyRepel repelHitbox;
 
 	[SerializeField] private int maxHealth = 200;
 	[SerializeField] private int defense = 0;
@@ -39,6 +41,7 @@ public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICom
 	[SerializeField] private float lungeSpeedMult = 4;
 	[SerializeField] private float initialLungeDistance = 3;
 	[SerializeField] private float knockbackResistanceTime = 0.5f;
+	[SerializeField] private float repelHitboxSize = 3;
 	[Space]
 	[SerializeField] private int damage = 50;
 	[SerializeField] private float knockbackTime = 0.4f;
@@ -60,6 +63,7 @@ public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICom
 		attack = GetComponent<MeleeAttack>();
 		movement = GetComponent<Movement>();
 		combatTarget = GetComponent<CombatTarget>();
+		repelHitbox = GetComponent<EnemyRepel>();
 		movement.OnStun += time => { if(stunCoroutine != null) StopCoroutine(stunCoroutine); stunCoroutine = StartCoroutine(ActivateStun(time)); };
 		state = State.Walking;
 	}
@@ -69,7 +73,7 @@ public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICom
 		switch(state)
 		{
 			case State.Walking:
-				movement.SetInput((PlayerSingleton.player.transform.position - transform.position).normalized);
+				movement.SetInput((PlayerSingleton.player.transform.position - transform.position).normalized + repelHitbox.GetRepelVector().normalized);
 				if (Vector2.Distance(transform.position, PlayerSingleton.player.transform.position) < attackDistance && !attackOnCooldown)
 				{
 					attackCoroutine = StartCoroutine(AttackCycle());

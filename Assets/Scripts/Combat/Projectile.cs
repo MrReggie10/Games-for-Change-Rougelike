@@ -2,11 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public interface IProjectile
+{
+	public void SetAngle(float angle);
+	public void SetStats(IRangedAttackStats stats);
+}
+
+public class Projectile : MonoBehaviour, IProjectile
 {
     private CircleCollider2D hitbox;
 
-    public float angle;
+	private float angle;
 
 	public IRangedAttackStats stats;
 
@@ -48,4 +54,14 @@ public class Projectile : MonoBehaviour
 		float yComp = Mathf.Sin(Mathf.Deg2Rad * angle) * stats.projectileSpeed * Time.deltaTime;
 		transform.position += new Vector3(xComp, yComp);
     }
+
+    public void SetAngle(float angle)
+    {
+		this.angle = angle;
+    }
+
+	public void SetStats(IRangedAttackStats stats)
+	{
+		this.stats = stats;
+	}
 }

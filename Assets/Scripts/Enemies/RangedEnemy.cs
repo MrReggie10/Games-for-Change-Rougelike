@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Movement), typeof(RangedAttack), typeof(CombatTarget))]
-public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, ICombatTargetStats
+public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, ICombatTargetStats, IEnemyRepelStats
 {
 	public enum State { Walking, Attacking, Stunned }
 
@@ -14,6 +14,9 @@ public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, IC
 	float IRangedAttackStats.volleySpread => spread;
 	float IRangedAttackStats.timeBetweenVolleys => timeBetweenVolleys;
 	float IRangedAttackStats.projectileSpeed => projectileSpeed;
+	float IRangedAttackStats.knockbackPower => knockbackForce;
+	float IRangedAttackStats.knockbackTime => knockbackDuration;
+	bool IRangedAttackStats.kamikaze => isKamikaze;
 	CombatTargetType IRangedAttackStats.targetType => CombatTargetType.Player;
 	float IMovementStats.baseSpeed => speed;
 	float IMovementStats.baseAcceleration => acceleration;
@@ -27,10 +30,13 @@ public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, IC
 	int ICombatTargetStats.defense => defense;
 	bool ICombatTargetStats.invuln => false;
 	CombatTargetType ICombatTargetStats.type => CombatTargetType.Enemy;
+    float IEnemyRepelStats.repelDist => repelHitboxSize;
+
 
     private RangedAttack attack;
 	private Movement movement;
 	private CombatTarget combatTarget;
+	private EnemyRepel repelHitbox;
 
 	[SerializeField] private int maxHealth = 200;
 	[SerializeField] private int defense = 0;
@@ -41,6 +47,7 @@ public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, IC
 	[SerializeField] private float lungeSpeedMult = 4;
 	[SerializeField] private float initialLungeDistance = 3;
 	[SerializeField] private float knockbackResistanceTime = 0.5f;
+	[SerializeField] private float repelHitboxSize = 3f;
 	[Space]
 	[SerializeField] private int damage = 50;
 	[SerializeField] private int volleys = 1;
@@ -53,6 +60,10 @@ public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, IC
 	[SerializeField] private float attackWindupTime = 0.5f;
 	[SerializeField] private float attackTime = 0.75f;
 	[SerializeField] private float attackInterval = 2.5f;
+	[SerializeField] private bool isKamikaze = false;
+	[Space]
+	[SerializeField] private float knockbackForce = 0;
+	[SerializeField] private float knockbackDuration = 0f;
 	private bool attackOnCooldown;
 
 	public State state;
@@ -66,6 +77,7 @@ public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, IC
 		attack = GetComponent<RangedAttack>();
 		movement = GetComponent<Movement>();
 		combatTarget = GetComponent<CombatTarget>();
+		repelHitbox = GetComponent<EnemyRepel>();
 		movement.OnStun += time => { if (stunCoroutine != null) StopCoroutine(stunCoroutine); stunCoroutine = StartCoroutine(ActivateStun(time)); };
 		state = State.Walking;
 	}
@@ -76,9 +88,9 @@ public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, IC
 		{
 			case State.Walking:
 				if (Vector2.Distance(transform.position, PlayerSingleton.player.transform.position) > farAttackDistance)
-					movement.SetInput((PlayerSingleton.player.transform.position - transform.position).normalized);
+					movement.SetInput((PlayerSingleton.player.transform.position - transform.position).normalized + repelHitbox.GetRepelVector().normalized);
 				else if (Vector2.Distance(transform.position, PlayerSingleton.player.transform.position) < closeAttackDistance && attackOnCooldown)
-					movement.SetInput((- PlayerSingleton.player.transform.position + transform.position).normalized);
+					movement.SetInput((- PlayerSingleton.player.transform.position + transform.position).normalized + repelHitbox.GetRepelVector().normalized);
 				else if (!attackOnCooldown)
 					attackCoroutine = StartCoroutine(AttackCycle());
 				break;

@@ -6,12 +6,16 @@ using UnityEngine;
 public interface IRangedAttackStats
 {
 	public int attackPower { get; }
+	public float knockbackPower { get; }
+	public float knockbackTime { get; }
 
 	public int numVolleys { get; }
 	public int projectilesPerVolley { get; }
 	public float volleySpread { get; }
 	public float timeBetweenVolleys { get; }
 	public float projectileSpeed { get; }
+
+	public bool kamikaze { get; }
 
 	public CombatTargetType targetType { get; }
 }
@@ -73,13 +77,18 @@ public class RangedAttack : MonoBehaviour
 			{
 				float xComp = Mathf.Cos(Mathf.Deg2Rad * (attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2)));
 				float yComp = Mathf.Sin(Mathf.Deg2Rad * (attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2)));
-				Projectile projectile = Instantiate(projectilePrefab, transform.position + new Vector3(xComp, yComp), Quaternion.identity).GetComponent<Projectile>();
-				projectile.angle = attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2);
-				projectile.stats = stats;
+				IProjectile projectile = Instantiate(projectilePrefab, transform.position + new Vector3(xComp, yComp), Quaternion.identity).GetComponent<IProjectile>();
+				projectile.SetAngle(attackAngle + (j * stats.volleySpread / stats.projectilesPerVolley) - (stats.volleySpread / 2));
+				projectile.SetStats(stats);
 			}
 
 			yield return new WaitForSeconds(stats.timeBetweenVolleys);
 		}
+
+		if(stats.kamikaze)
+        {
+			Destroy(gameObject);
+        }
 
 		m_attacking = false;
 	}
