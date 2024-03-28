@@ -6,13 +6,13 @@ using Random = UnityEngine.Random;
 
 public class FloorGeneration : MonoBehaviour
 {
-    const int MAIN_ROUTE_NUM = -1;
-    const int MAP_SIZE = 64;
+    //const int MAIN_ROUTE_NUM = -1;
+    //const int MAP_SIZE = 64;
 
-    const int DIRECTION_NORTH = 0;
-    const int DIRECTION_EAST = 1;
-    const int DIRECTION_SOUTH = 2;
-    const int DIRECTION_WEST = 3;
+    //const int DIRECTION_NORTH = 0;
+    //const int DIRECTION_EAST = 1;
+    //const int DIRECTION_SOUTH = 2;
+    //const int DIRECTION_WEST = 3;
 
     #region Data Structures
     /// <summary>
@@ -43,7 +43,6 @@ public class FloorGeneration : MonoBehaviour
         public FloorData(FloorProperties properties)
         {
             this.properties = properties;
-            floorLayout = new RoomPrototype[MAP_SIZE, MAP_SIZE];
         }
     }
 
@@ -66,10 +65,11 @@ public class FloorGeneration : MonoBehaviour
 
     public class SideRouteProperties
     {
+        public readonly RouteType type;
 
-        public SideRouteProperties()
+        public SideRouteProperties(RouteType type)
         {
-
+            this.type = type;
         }
     }
 
@@ -96,7 +96,11 @@ public class FloorGeneration : MonoBehaviour
     #endregion
 
     [SerializeField] GameObject mainGuy;
-    [SerializeField] List<GameObject> roomPrefabs;
+    [SerializeField] List<Room> roomPrefabs;
+    [SerializeField] List<FloorBlueprintSO> floorBlueprints;
+    [SerializeField] Door horizontalDoorPrefab;
+    [SerializeField] Door verticalDoorPrefab;
+    [SerializeField] Sprite wallSprite;
 
     private FloorData floorData;
 
@@ -111,12 +115,116 @@ public class FloorGeneration : MonoBehaviour
         floorData = null;
     }
 
-    public void GenerateFloor(FloorProperties properties)
+    const float WALLWIDTH = 1;
+    const float DOORSIZE = 2;
+    const float CELLSIZE = 10;
+
+    public bool GenerateFloor(FloorProperties properties)
     {
         DeleteFloor();
         floorData = new FloorData(properties);
         Random.InitState(properties.seed);
-        /*
+
+        //STEP 1: Choose Floor and initialize basic data
+        FloorBlueprint floorBlueprint = floorBlueprints[Random.Range(0, floorBlueprints.Count)].ConstructData();
+        //while (floorBlueprint.numSideRoutes != floorData.properties.sideRoutes.Count)
+        //    floorBlueprint = floorBlueprints[Random.Range(0, floorBlueprints.Count)].ConstructData();
+        //TODO: check more thoroughly whether the chosen floor blueprint fits the desired properties. We can make it so each floor draws from a different pool if this becomes a problem and we don't want to code more.
+
+        floorData.floorLayout = new RoomPrototype[floorBlueprint.floorBounds.x, floorBlueprint.floorBounds.y];
+        floorData.startRoomLocation = floorBlueprint.startingRoomPos;
+        floorData.bossRoomLocation = floorBlueprint.bossRoomPos;
+
+        //STEP 2: Create walls/doors
+        for(int i = 0; i < floorBlueprint.numHorizontalDoors; i++)
+        {
+            Vector2 wallLocation = (Vector2)floorBlueprint.horizontalWallData[i] * CELLSIZE; //bottom-left corner of room
+            wallLocation += Vector2.right * CELLSIZE / 2; //move to bottom-center of room
+            Instantiate(horizontalDoorPrefab, wallLocation, Quaternion.identity);
+            GameObject wall1 = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall1.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall1.transform.localScale = new Vector3((CELLSIZE - DOORSIZE + WALLWIDTH) / 2, WALLWIDTH);
+            wall1.transform.position = wallLocation + Vector2.left * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
+            GameObject wall2 = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall2.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall2.transform.localScale = new Vector3((CELLSIZE - DOORSIZE + WALLWIDTH) / 2, WALLWIDTH);
+            wall2.transform.position = wallLocation + Vector2.right * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
+        }
+        for(int i = floorBlueprint.numHorizontalDoors; i < floorBlueprint.horizontalWallData.Count; i++)
+        {
+            Vector2 wallLocation = (Vector2)floorBlueprint.horizontalWallData[i] * CELLSIZE; //bottom-left corner of room
+            wallLocation += Vector2.right * CELLSIZE / 2; //move to bottom-center of room
+            GameObject wall = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall.transform.localScale = new Vector3(CELLSIZE+ WALLWIDTH, WALLWIDTH);
+            wall.transform.position = wallLocation;
+        }
+
+        for (int i = 0; i < floorBlueprint.numVerticalDoors; i++)
+        {
+            Vector2 wallLocation = (Vector2)floorBlueprint.verticalWallData[i] * CELLSIZE; //bottom-left corner of room
+            wallLocation += Vector2.up * CELLSIZE / 2; //move to center-left of room
+            Instantiate(verticalDoorPrefab, wallLocation, Quaternion.identity);
+            GameObject wall1 = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall1.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall1.transform.localScale = new Vector3(WALLWIDTH, (CELLSIZE - DOORSIZE + WALLWIDTH) / 2);
+            wall1.transform.position = wallLocation + Vector2.down * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
+            GameObject wall2 = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall2.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall2.transform.localScale = new Vector3(WALLWIDTH, (CELLSIZE - DOORSIZE + WALLWIDTH) / 2);
+            wall2.transform.position = wallLocation + Vector2.up * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
+        }
+        for (int i = floorBlueprint.numVerticalDoors; i < floorBlueprint.verticalWallData.Count; i++)
+        {
+            Vector2 wallLocation = (Vector2)floorBlueprint.verticalWallData[i] * CELLSIZE; //bottom-left corner of room
+            wallLocation += Vector2.up * CELLSIZE / 2; //move to center-left of room
+            GameObject wall = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall.transform.localScale = new Vector3(WALLWIDTH, CELLSIZE + WALLWIDTH);
+            wall.transform.position = wallLocation;
+        }
+        return true; //short circuit to make sure walls generate work correctly
+        //STEP 3: Add rooms
+        foreach (RoomBlueprint blueprint in floorBlueprint.roomBlueprints)
+        {
+            RoomPrototype prototype = new RoomPrototype { routeNum = blueprint.route, type = blueprint.type };
+            Room prefab;
+            int numAttempts = 0;
+            do
+            {
+                numAttempts++;
+                prefab = roomPrefabs[Random.Range(0, roomPrefabs.Count)];
+                if (prefab.size != blueprint.bounds.size) continue; //check room size
+                if (prefab.roomType != blueprint.type) continue; //check room type
+                switch (blueprint.route) //check route type
+                {
+                    case 0: //no route
+                    case 1: //main route
+                        if (prefab.routeType != RouteType.Normal)
+                            continue;
+                        break;
+                    default: //side route
+                        if (prefab.routeType != floorData.properties.sideRoutes[blueprint.route - 2].type)
+                            continue;
+                        break;
+                }
+                //TODO: Implement check for wall availability in room prefab. Otherwise, make all rooms have all walls available (i.e. don't block any of them)
+            } while (numAttempts < 200);
+            if (numAttempts >= 200)
+            {
+                Debug.LogError("Failed to generate floor. Desired room could not be found.");
+                return false;
+            }
+
+            //room fits parameters, create it
+            prototype.room = Instantiate(prefab); //Unity automatically clones the gameobject and returns the room component like this
+            prototype.room.mapPos = blueprint.bounds.min;
+            //move the room into position
+        }
+
+        return true;
+    }
+        /* OLD GENERATION CODE
         PlaceRoom(0);
 
         mainGuy.transform.position = new Vector3(currentTile[0] * 36, currentTile[1] * 20, 0);
@@ -166,7 +274,6 @@ public class FloorGeneration : MonoBehaviour
                 if (!generationFailed) { break; } else { generationFailed = false; }
             }
         }
-        */
     }
 
     private void SetupMainRoute()

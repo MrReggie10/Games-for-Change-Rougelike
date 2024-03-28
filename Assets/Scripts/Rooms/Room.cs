@@ -2,23 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum RoomType { Normal, Start, Boss }
+public enum RoomType { Normal, Start, Boss, Treasure, Connector }
+public enum RouteType { Normal, Hot, Cold }
 
 public class Room : MonoBehaviour
 {
+    [Header("Local Properties")]
     [SerializeField] private List<GameObject> enemies;
-    public List<Door> connectedDoors;
 
-    public Vector2Int mapPos;
+    [Header("Template Properties")]
     [SerializeField] Vector2Int m_size;
     public Vector2Int size => m_size;
-    public RoomType roomType;
+    [SerializeField] RoomType m_roomType;
+    public RoomType roomType => m_roomType;
+    [SerializeField] RouteType m_routeType;
+    public RouteType routeType => m_routeType;
+    //[SerializeField] List<bool> m_availableDoors;
+    //public IReadOnlyList<bool> availableDoors => m_availableDoors;
+
+    [Header("Map Properties")]
+    public Vector2Int mapPos;
+    public List<Door> connectedDoors;
     public bool isCleared { get; private set; }
 
     private void Start()
     {
         Init();
-        if (roomType == RoomType.Start)
+        if (m_roomType == RoomType.Start)
             GameManager.instance.RoomChangeTrigger(this);
     }
 
