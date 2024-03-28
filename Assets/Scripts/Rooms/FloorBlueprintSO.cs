@@ -6,9 +6,6 @@ using UnityEngine;
 //Room blueprints are used as a constraint for what type of room can be placed where (the specific room used won't be baked into the floor)
 public class RoomBlueprint
 {
-    /// <summary>
-    /// Use "bounds.min" for the room position, not "bounds.position".
-    /// </summary>
     public RectInt bounds;
     public int route;
     public RoomType type;
@@ -70,7 +67,7 @@ public class FloorBlueprintSO : ScriptableObject
     //[Tooltip("If a room is non-rectangular, split the room into multiple data entries, with each one not exceeding the bounds of the room, and put the extra entries at the end.\n" +
     //         "Do not increase the room count variable for these extra entries, and make sure to have 1 (and only 1) entry before the end (it's recommended this be the biggest rectangle you can make with the room).")]
     [SerializeField] List<Vector2Int> roomSizes;
-    [Tooltip("Origins are bottom-left-most cell in room.")]
+    [Tooltip("Origins are center cell in room, rounded down (towards bottom-left) if room has even dimensions.")]
     [SerializeField] List<Vector2Int> roomOrigins;
     [Tooltip("0 = no route, 1 = main route, 2+ = side route\n" +
              "Start, Boss, and Connector rooms should be no route\n" +
@@ -123,12 +120,11 @@ public class FloorBlueprintSO : ScriptableObject
         {
             RoomBlueprint roomData = new RoomBlueprint()
             {
-                bounds = new RectInt(roomOrigins[i].x, roomOrigins[i].y, roomSizes[i].x, roomSizes[i].y ), //don't change this to the Vector2Int constructor
+                bounds = new RectInt(roomOrigins[i], roomSizes[i]),
                 route = roomRoutes[i],
                 type = roomTypes[i],
                 unblockedWalls = new List<int>()
             };
-            Debug.Log($"Room {i} bounds: {{{roomData.bounds.min}, {roomData.bounds.max}}}");
             RoomPrototype room = new RoomPrototype()
             {
                 bounds = roomData.bounds,

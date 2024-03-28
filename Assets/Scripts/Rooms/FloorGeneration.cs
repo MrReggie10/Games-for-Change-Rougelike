@@ -229,8 +229,8 @@ public class FloorGeneration : MonoBehaviour
 
             //room fits parameters, create it
             prototype.room = Instantiate(prefab); //Unity automatically clones the gameobject and returns the room component like this
-            prototype.room.mapPos = blueprint.bounds.min;
-            //move the room into position
+            prototype.room.mapPos = blueprint.bounds.position;
+            prototype.room.transform.position = blueprint.bounds.center * CELLSIZE;
         }
 
         return true;
