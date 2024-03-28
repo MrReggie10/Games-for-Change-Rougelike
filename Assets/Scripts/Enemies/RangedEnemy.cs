@@ -115,16 +115,12 @@ public class RangedEnemy : MonoBehaviour, IRangedAttackStats, IMovementStats, IC
 		cooldownCoroutine = StartCoroutine(AttackCooldown());
 		state = State.Attacking;
 		movement.SetInput(Vector2.zero);
-		//Debug.Log("Wind-up");
 		yield return new WaitForSeconds(attackWindupTime);
 
-		Vector3 playerPos = PlayerSingleton.player.transform.position;
 		attack.Attack();
-		//Debug.Log("Attack");
 
 		yield return new WaitForSeconds(attackTime);
 
-		//Debug.Log("Attack finished");
 		state = State.Walking;
 	}
 

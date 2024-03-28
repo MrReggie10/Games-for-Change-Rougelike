@@ -69,6 +69,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2990404019817384684, guid: 1436d6921ef6047c4a8babf263bf6a96, type: 3}
+      propertyPath: knockbackForce
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2990404019817384684, guid: 1436d6921ef6047c4a8babf263bf6a96, type: 3}
       propertyPath: projectileSpeed
       value: 0
       objectReference: {fileID: 0}
@@ -79,6 +83,10 @@ PrefabInstance:
     - target: {fileID: 2990404019817384684, guid: 1436d6921ef6047c4a8babf263bf6a96, type: 3}
       propertyPath: farAttackDistance
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2990404019817384684, guid: 1436d6921ef6047c4a8babf263bf6a96, type: 3}
+      propertyPath: knockbackDuration
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 2990404019817384684, guid: 1436d6921ef6047c4a8babf263bf6a96, type: 3}
       propertyPath: closeAttackDistance

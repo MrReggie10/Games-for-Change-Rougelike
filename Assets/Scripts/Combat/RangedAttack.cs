@@ -24,7 +24,7 @@ public interface IRangedAttackStats
 [RequireComponent(typeof(IRangedAttackStats))]
 public class RangedAttack : MonoBehaviour
 {
-	[SerializeField] private GameObject projectilePrefab;
+	public GameObject projectilePrefab;
 
 	private bool m_attacking = false;
 	public bool attacking => m_attacking;

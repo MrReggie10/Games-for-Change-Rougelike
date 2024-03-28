@@ -49,18 +49,21 @@ public class BombProjectile : MonoBehaviour, IProjectile
 
 		if (overlapColliders.Count > 0)
 		{
-			CombatTarget target = overlapColliders[0].GetComponent<CombatTarget>();
-			if (target != null && target.type == stats.targetType)
+			foreach (Collider2D collider in overlapColliders)
 			{
-				DamageInfo info = new DamageInfo
+				CombatTarget target = collider.GetComponent<CombatTarget>();
+				if (target != null && target.type == stats.targetType)
 				{
-					attackPower = stats.attackPower,
-					knockbackForce = (PlayerSingleton.player.transform.position - transform.position).normalized * stats.knockbackPower,
-					knockbackTime = stats.knockbackTime
-				};
-				overlapColliders[0].GetComponent<CombatTarget>().Damage(info);
+					DamageInfo info = new DamageInfo
+					{
+						attackPower = stats.attackPower,
+						knockbackForce = (PlayerSingleton.player.transform.position - transform.position).normalized * stats.knockbackPower,
+						knockbackTime = stats.knockbackTime
+					};
+					Debug.Log(info.knockbackTime);
+					collider.GetComponent<CombatTarget>().Damage(info);
+				}
 			}
-			Debug.Log(target);
 		}
 	}
 
