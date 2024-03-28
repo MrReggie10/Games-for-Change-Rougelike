@@ -194,10 +194,10 @@ public class FloorGeneration : MonoBehaviour
             wall.transform.localScale = new Vector3(WALLWIDTH, CELLSIZE + WALLWIDTH);
             wall.transform.position = wallLocation;
         }
-        return true; //short circuit to make sure walls generate work correctly
         //STEP 3: Add rooms
         foreach (RoomBlueprint blueprint in floorBlueprint.roomBlueprints)
         {
+            //Debug.Log("Creating room blueprint");
             RoomPrototype prototype = new RoomPrototype { routeNum = blueprint.route, type = blueprint.type };
             Room prefab;
             int numAttempts = 0;
@@ -205,6 +205,7 @@ public class FloorGeneration : MonoBehaviour
             {
                 numAttempts++;
                 prefab = roomPrefabs[Random.Range(0, roomPrefabs.Count)];
+                //Debug.Log($"Room Candidate: Size: {prefab.size}. Room Type: {prefab.roomType}. Route: {prefab.routeType}.");
                 if (prefab.size != blueprint.bounds.size) continue; //check room size
                 if (prefab.roomType != blueprint.type) continue; //check room type
                 switch (blueprint.route) //check route type
@@ -219,6 +220,7 @@ public class FloorGeneration : MonoBehaviour
                             continue;
                         break;
                 }
+                break;
                 //TODO: Implement check for wall availability in room prefab. Otherwise, make all rooms have all walls available (i.e. don't block any of them)
             } while (numAttempts < 200);
             if (numAttempts >= 200)
@@ -226,11 +228,19 @@ public class FloorGeneration : MonoBehaviour
                 Debug.LogError("Failed to generate floor. Desired room could not be found.");
                 return false;
             }
-
+            //Debug.Log($"Generating room {prefab.gameObject.name}");
             //room fits parameters, create it
             prototype.room = Instantiate(prefab); //Unity automatically clones the gameobject and returns the room component like this
             prototype.room.mapPos = blueprint.bounds.position;
             prototype.room.transform.position = blueprint.bounds.center * CELLSIZE;
+            prototype.room.Init();
+            for(int x = blueprint.bounds.xMin; x < blueprint.bounds.xMax; x++)
+            {
+                for(int y = blueprint.bounds.yMin; y < blueprint.bounds.yMax; y++)
+                {
+                    floorData.floorLayout[x, y] = prototype;
+                }
+            }
         }
 
         return true;

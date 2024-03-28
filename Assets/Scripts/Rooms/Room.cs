@@ -20,17 +20,10 @@ public class Room : MonoBehaviour
     //[SerializeField] List<bool> m_availableDoors;
     //public IReadOnlyList<bool> availableDoors => m_availableDoors;
 
-    [Header("Map Properties")]
+    [Header("Map Properties (Set by script)")]
     public Vector2Int mapPos;
     public List<Door> connectedDoors;
     public bool isCleared { get; private set; }
-
-    private void Start()
-    {
-        Init();
-        if (m_roomType == RoomType.Start)
-            GameManager.instance.RoomChangeTrigger(this);
-    }
 
     public void Init()
     {

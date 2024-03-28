@@ -4,10 +4,31 @@ using UnityEngine;
 
 public class FloorGenerationDebug : MonoBehaviour
 {
+    [SerializeField] bool setSeed;
+    [SerializeField] int seed;
+    [SerializeField] List<RouteType> sideRoutes;
 
-    // Start is called before the first frame update
+    [Header("The parameters below do nothing.")]
+    [SerializeField] int floorNum;
+    [SerializeField] int minArea;
+    [SerializeField] int mainRouteMinDistance;
+    [SerializeField] int mainRouteMaxDistance;
+    [SerializeField] int mainRouteMinRooms;
+    [SerializeField] int mainRouteMaxRooms;
+    [SerializeField] bool setStartPos;
+    [SerializeField] Vector2Int startRoomPos;
+
     void Start()
     {
-        GetComponent<FloorGeneration>().GenerateFloor(new FloorGeneration.FloorProperties(0, new FloorGeneration.MainRouteProperties(0, 0, 0, 0), 0));
+        List<FloorGeneration.SideRouteProperties> sides = new List<FloorGeneration.SideRouteProperties>();
+        foreach (RouteType type in sideRoutes)
+            sides.Add(new FloorGeneration.SideRouteProperties(type));
+        GetComponent<FloorGeneration>().GenerateFloor(new FloorGeneration.FloorProperties(
+            floorNum,
+            new FloorGeneration.MainRouteProperties(mainRouteMinDistance, mainRouteMaxDistance, mainRouteMinRooms, mainRouteMaxRooms),
+            minArea,
+            setStartPos ? startRoomPos : null,
+            sides,
+            setSeed ? seed : null));
     }
 }

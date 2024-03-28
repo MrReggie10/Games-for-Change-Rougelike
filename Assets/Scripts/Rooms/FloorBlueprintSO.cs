@@ -67,7 +67,7 @@ public class FloorBlueprintSO : ScriptableObject
     //[Tooltip("If a room is non-rectangular, split the room into multiple data entries, with each one not exceeding the bounds of the room, and put the extra entries at the end.\n" +
     //         "Do not increase the room count variable for these extra entries, and make sure to have 1 (and only 1) entry before the end (it's recommended this be the biggest rectangle you can make with the room).")]
     [SerializeField] List<Vector2Int> roomSizes;
-    [Tooltip("Origins are center cell in room, rounded down (towards bottom-left) if room has even dimensions.")]
+    [Tooltip("Origins are bottom-left cells of rooms.")]
     [SerializeField] List<Vector2Int> roomOrigins;
     [Tooltip("0 = no route, 1 = main route, 2+ = side route\n" +
              "Start, Boss, and Connector rooms should be no route\n" +
@@ -125,6 +125,7 @@ public class FloorBlueprintSO : ScriptableObject
                 type = roomTypes[i],
                 unblockedWalls = new List<int>()
             };
+            //Debug.Log($"Room {i} bounds: {{{roomData.bounds.min}, {roomData.bounds.max}}}");
             RoomPrototype room = new RoomPrototype()
             {
                 bounds = roomData.bounds,
@@ -132,6 +133,9 @@ public class FloorBlueprintSO : ScriptableObject
                 type = roomData.type,
                 blueprints = new List<RoomBlueprint>() { roomData }
             };
+
+            floor.roomBlueprints.Add(roomData);
+            floor.roomData.Add(room);
 
             int x;
             int y;

@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
 				Time.timeScale = 0;
 			}
 		}
-		if (inventoryMenu.enabled)
+		if (inventoryMenu != null && inventoryMenu.enabled)
 			return;
 		if (!attack.attacking)
 		{
