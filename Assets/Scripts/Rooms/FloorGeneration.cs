@@ -126,10 +126,21 @@ public class FloorGeneration : MonoBehaviour
         Random.InitState(properties.seed);
 
         //STEP 1: Choose Floor and initialize basic data
-        FloorBlueprint floorBlueprint = floorBlueprints[Random.Range(0, floorBlueprints.Count)].ConstructData();
-        //while (floorBlueprint.numSideRoutes != floorData.properties.sideRoutes.Count)
-        //    floorBlueprint = floorBlueprints[Random.Range(0, floorBlueprints.Count)].ConstructData();
-        //TODO: check more thoroughly whether the chosen floor blueprint fits the desired properties. We can make it so each floor draws from a different pool if this becomes a problem and we don't want to code more.
+        FloorBlueprint floorBlueprint;
+        int floorAttempts = 0;
+        do
+        {
+            floorAttempts++;
+            floorBlueprint = floorBlueprints[Random.Range(0, floorBlueprints.Count)].ConstructData();
+            //TODO: Check more thoroughly whether the chosen floor blueprint fits the desired properties. We can make it so each floor draws from a different pool if this becomes a problem and we don't want to code more.
+            if (floorBlueprint.numSideRoutes != floorData.properties.sideRoutes.Count) continue;
+            break;
+        } while (floorAttempts < 20);
+        if(floorAttempts >= 20)
+        {
+            Debug.LogError("Failed to generate floor. Unable to find compatible floor blueprint.");
+            return false;
+        }
 
         floorData.floorLayout = new RoomPrototype[floorBlueprint.floorBounds.x, floorBlueprint.floorBounds.y];
         floorData.startRoomLocation = floorBlueprint.startingRoomPos;
