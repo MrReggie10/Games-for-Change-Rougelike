@@ -146,55 +146,7 @@ public class FloorGeneration : MonoBehaviour
         floorData.startRoomLocation = floorBlueprint.startingRoomPos;
         floorData.bossRoomLocation = floorBlueprint.bossRoomPos;
 
-        //STEP 2: Create walls/doors
-        for(int i = 0; i < floorBlueprint.numHorizontalDoors; i++)
-        {
-            Vector2 wallLocation = (Vector2)floorBlueprint.horizontalWallData[i] * CELLSIZE; //bottom-left corner of room
-            wallLocation += Vector2.right * CELLSIZE / 2; //move to bottom-center of room
-            Instantiate(horizontalDoorPrefab, wallLocation, Quaternion.identity);
-            GameObject wall1 = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
-            wall1.GetComponent<SpriteRenderer>().sprite = wallSprite;
-            wall1.transform.localScale = new Vector3((CELLSIZE - DOORSIZE + WALLWIDTH) / 2, WALLWIDTH);
-            wall1.transform.position = wallLocation + Vector2.left * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
-            GameObject wall2 = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
-            wall2.GetComponent<SpriteRenderer>().sprite = wallSprite;
-            wall2.transform.localScale = new Vector3((CELLSIZE - DOORSIZE + WALLWIDTH) / 2, WALLWIDTH);
-            wall2.transform.position = wallLocation + Vector2.right * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
-        }
-        for(int i = floorBlueprint.numHorizontalDoors; i < floorBlueprint.horizontalWallData.Count; i++)
-        {
-            Vector2 wallLocation = (Vector2)floorBlueprint.horizontalWallData[i] * CELLSIZE; //bottom-left corner of room
-            wallLocation += Vector2.right * CELLSIZE / 2; //move to bottom-center of room
-            GameObject wall = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
-            wall.GetComponent<SpriteRenderer>().sprite = wallSprite;
-            wall.transform.localScale = new Vector3(CELLSIZE+ WALLWIDTH, WALLWIDTH);
-            wall.transform.position = wallLocation;
-        }
-
-        for (int i = 0; i < floorBlueprint.numVerticalDoors; i++)
-        {
-            Vector2 wallLocation = (Vector2)floorBlueprint.verticalWallData[i] * CELLSIZE; //bottom-left corner of room
-            wallLocation += Vector2.up * CELLSIZE / 2; //move to center-left of room
-            Instantiate(verticalDoorPrefab, wallLocation, Quaternion.identity);
-            GameObject wall1 = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
-            wall1.GetComponent<SpriteRenderer>().sprite = wallSprite;
-            wall1.transform.localScale = new Vector3(WALLWIDTH, (CELLSIZE - DOORSIZE + WALLWIDTH) / 2);
-            wall1.transform.position = wallLocation + Vector2.down * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
-            GameObject wall2 = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
-            wall2.GetComponent<SpriteRenderer>().sprite = wallSprite;
-            wall2.transform.localScale = new Vector3(WALLWIDTH, (CELLSIZE - DOORSIZE + WALLWIDTH) / 2);
-            wall2.transform.position = wallLocation + Vector2.up * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
-        }
-        for (int i = floorBlueprint.numVerticalDoors; i < floorBlueprint.verticalWallData.Count; i++)
-        {
-            Vector2 wallLocation = (Vector2)floorBlueprint.verticalWallData[i] * CELLSIZE; //bottom-left corner of room
-            wallLocation += Vector2.up * CELLSIZE / 2; //move to center-left of room
-            GameObject wall = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
-            wall.GetComponent<SpriteRenderer>().sprite = wallSprite;
-            wall.transform.localScale = new Vector3(WALLWIDTH, CELLSIZE + WALLWIDTH);
-            wall.transform.position = wallLocation;
-        }
-        //STEP 3: Add rooms
+        //STEP 2: Add rooms
         foreach (RoomBlueprint blueprint in floorBlueprint.roomBlueprints)
         {
             //Debug.Log("Creating room blueprint");
@@ -241,6 +193,79 @@ public class FloorGeneration : MonoBehaviour
                     floorData.floorLayout[x, y] = prototype;
                 }
             }
+        }
+
+        //STEP 3: Create walls/doors
+        for (int i = 0; i < floorBlueprint.numHorizontalDoors; i++)
+        {
+            Vector2Int wallGridPos = floorBlueprint.horizontalWallData[i];
+            Vector2 wallLocation = (Vector2)wallGridPos * CELLSIZE; //bottom-left corner of room
+            wallLocation += Vector2.right * CELLSIZE / 2; //move to bottom-center of room
+            Door door = Instantiate(horizontalDoorPrefab, wallLocation, Quaternion.identity);
+
+            door.room1 = floorData.floorLayout[wallGridPos.x, wallGridPos.y - 1].room;
+            door.room2 = floorData.floorLayout[wallGridPos.x, wallGridPos.y].room;
+            if(door.room1 == null || door.room2 == null)
+            {
+                Debug.LogError($"Floor generation failed. Invalid door index {i}.");
+                return false;
+            }
+            door.room1.connectedDoors.Add(door);
+            door.room2.connectedDoors.Add(door);
+
+            GameObject wall1 = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall1.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall1.transform.localScale = new Vector3((CELLSIZE - DOORSIZE + WALLWIDTH) / 2, WALLWIDTH);
+            wall1.transform.position = wallLocation + Vector2.left * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
+            GameObject wall2 = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall2.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall2.transform.localScale = new Vector3((CELLSIZE - DOORSIZE + WALLWIDTH) / 2, WALLWIDTH);
+            wall2.transform.position = wallLocation + Vector2.right * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
+        }
+        for (int i = floorBlueprint.numHorizontalDoors; i < floorBlueprint.horizontalWallData.Count; i++)
+        {
+            Vector2 wallLocation = (Vector2)floorBlueprint.horizontalWallData[i] * CELLSIZE; //bottom-left corner of room
+            wallLocation += Vector2.right * CELLSIZE / 2; //move to bottom-center of room
+            GameObject wall = new GameObject("Horizontal Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall.transform.localScale = new Vector3(CELLSIZE + WALLWIDTH, WALLWIDTH);
+            wall.transform.position = wallLocation;
+        }
+
+        for (int i = 0; i < floorBlueprint.numVerticalDoors; i++)
+        {
+            Vector2Int wallGridPos = floorBlueprint.verticalWallData[i];
+            Vector2 wallLocation = (Vector2)wallGridPos * CELLSIZE; //bottom-left corner of room
+            wallLocation += Vector2.up * CELLSIZE / 2; //move to center-left of room
+            Door door = Instantiate(verticalDoorPrefab, wallLocation, Quaternion.identity);
+
+            door.room1 = floorData.floorLayout[wallGridPos.x - 1, wallGridPos.y].room;
+            door.room2 = floorData.floorLayout[wallGridPos.x, wallGridPos.y].room;
+            if (door.room1 == null || door.room2 == null)
+            {
+                Debug.LogError($"Floor generation failed. Invalid door index {i}.");
+                return false;
+            }
+            door.room1.connectedDoors.Add(door);
+            door.room2.connectedDoors.Add(door);
+
+            GameObject wall1 = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall1.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall1.transform.localScale = new Vector3(WALLWIDTH, (CELLSIZE - DOORSIZE + WALLWIDTH) / 2);
+            wall1.transform.position = wallLocation + Vector2.down * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
+            GameObject wall2 = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall2.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall2.transform.localScale = new Vector3(WALLWIDTH, (CELLSIZE - DOORSIZE + WALLWIDTH) / 2);
+            wall2.transform.position = wallLocation + Vector2.up * (CELLSIZE + DOORSIZE + WALLWIDTH) / 4;
+        }
+        for (int i = floorBlueprint.numVerticalDoors; i < floorBlueprint.verticalWallData.Count; i++)
+        {
+            Vector2 wallLocation = (Vector2)floorBlueprint.verticalWallData[i] * CELLSIZE; //bottom-left corner of room
+            wallLocation += Vector2.up * CELLSIZE / 2; //move to center-left of room
+            GameObject wall = new GameObject("Vertical Wall", typeof(BoxCollider2D), typeof(SpriteRenderer));
+            wall.GetComponent<SpriteRenderer>().sprite = wallSprite;
+            wall.transform.localScale = new Vector3(WALLWIDTH, CELLSIZE + WALLWIDTH);
+            wall.transform.position = wallLocation;
         }
 
         return true;
