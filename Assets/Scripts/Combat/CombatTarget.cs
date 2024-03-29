@@ -57,5 +57,6 @@ public class CombatTarget : MonoBehaviour
 			dead = true;
 			OnDeath?.Invoke();
 		}
+		Debug.Log(health);
 	}
 }
