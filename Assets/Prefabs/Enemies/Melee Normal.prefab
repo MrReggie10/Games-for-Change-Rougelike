@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9122625263692086752}
   - component: {fileID: 1627763770566845314}
   - component: {fileID: 4921736352199791030}
+  - component: {fileID: 5022533194911625333}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Untagged
@@ -120,6 +121,19 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 2}
   m_Direction: 0
+--- !u!114 &5022533194911625333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 395414066880442884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5ca17793dea7413f8c3481ff6500f97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackScript: {fileID: 3039379259864761830}
 --- !u!1 &3336309710095819278
 GameObject:
   m_ObjectHideFlags: 0

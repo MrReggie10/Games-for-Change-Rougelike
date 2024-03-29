@@ -83,7 +83,7 @@ public class BossEnemy : MonoBehaviour, IMeleeAttackStats, IRangedAttackStats, I
 
 	[Header("Triple Lunge Stats")]
 	[SerializeField] private float tL_LungeSpeedMult = 4;
-	[SerializeField] private float tL_initialLungeDistance = 0;
+	[SerializeField] private float tL_initialLungeDistance = 15;
 	[SerializeField] private int tL_meleeDamage = 50;
 	[SerializeField] private float tL_knockbackTime = 0.4f;
 	[SerializeField] private float tL_knockbackForce = 20;
@@ -158,7 +158,7 @@ public class BossEnemy : MonoBehaviour, IMeleeAttackStats, IRangedAttackStats, I
 		movement = GetComponent<Movement>();
 		combatTarget = GetComponent<CombatTarget>();
 		repelHitbox = GetComponent<EnemyRepel>();
-		movement.OnStun += time => { if (stunCoroutine != null) StopCoroutine(stunCoroutine); stunCoroutine = StartCoroutine(ActivateStun(time)); };
+		//movement.OnStun += time => { if (stunCoroutine != null) StopCoroutine(stunCoroutine); stunCoroutine = StartCoroutine(ActivateStun(time)); };
 		state = State.Walking;
 	}
 
@@ -194,19 +194,6 @@ public class BossEnemy : MonoBehaviour, IMeleeAttackStats, IRangedAttackStats, I
 		}
 	}
 
-	public IEnumerator ActivateStun(float secondsActive)
-	{
-		if (attackCoroutine != null)
-			StopCoroutine(attackCoroutine);
-		attackMelee.CancelAttack();
-		movement.SetInput(Vector2.zero);
-		state = State.Stunned;
-
-		yield return new WaitForSeconds(secondsActive);
-
-		state = State.Walking;
-	}
-
 	private IEnumerator TL_Cycle()
 	{
 		lungeSpeedMult = tL_LungeSpeedMult;
@@ -222,7 +209,6 @@ public class BossEnemy : MonoBehaviour, IMeleeAttackStats, IRangedAttackStats, I
 		for(int i = 0; i < 3; i++)
         {
 			Vector3 playerPos = PlayerSingleton.player.transform.position;
-			tL_initialLungeDistance = (float) Math.Sqrt(Math.Pow(playerPos.x - transform.position.x, 2) + Math.Pow(playerPos.y - transform.position.y, 2));
 			attackMelee.AimAt(playerPos);
 			yield return new WaitForSeconds(tL_attackWindupTime);
 			attackMelee.Attack();

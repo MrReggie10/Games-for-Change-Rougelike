@@ -67,27 +67,25 @@ public class MeleeAttack : MonoBehaviour
 		m_attacking = true;
 
 		meleeHitbox.SetActive(true);
-		List<Collider2D> overlapColliders = new List<Collider2D>();
-		meleeHitbox.GetComponent<CapsuleCollider2D>().OverlapCollider(new ContactFilter2D().NoFilter(), overlapColliders);
-		
-		foreach(Collider2D collider in overlapColliders)
-		{
-			CombatTarget target = collider.GetComponent<CombatTarget>();
-			if (target != null && target.type == stats.targetType)
-			{
-				DamageInfo info = new DamageInfo
-				{
-					attackPower = stats.attackPower,
-					knockbackForce = stats.knockbackPower * aimDirection,
-					knockbackTime = stats.knockbackTime
-				};
-				collider.GetComponent<CombatTarget>().Damage(info);
-			}
-		}
 
 		yield return new WaitForSeconds(stats.activeTime);
 
 		m_attacking = false;
 		meleeHitbox.SetActive(false);
+	}
+
+    public void HitboxDamage(Collider2D collision)
+    {
+		CombatTarget target = collision.GetComponent<CombatTarget>();
+		if (target != null && target.type == stats.targetType)
+		{
+			DamageInfo info = new DamageInfo
+			{
+				attackPower = stats.attackPower,
+				knockbackForce = stats.knockbackPower * aimDirection,
+				knockbackTime = stats.knockbackTime
+			};
+			collision.GetComponent<CombatTarget>().Damage(info);
+		}
 	}
 }
