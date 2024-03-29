@@ -65,10 +65,16 @@ public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICom
 		combatTarget = GetComponent<CombatTarget>();
 		repelHitbox = GetComponent<EnemyRepel>();
 		movement.OnStun += time => { if(stunCoroutine != null) StopCoroutine(stunCoroutine); stunCoroutine = StartCoroutine(ActivateStun(time)); };
+		combatTarget.OnDeath += delegate { Destroy(gameObject); };
 		state = State.Walking;
 	}
 
-	void Update()
+    private void OnEnable()
+    {
+		cooldownCoroutine = StartCoroutine(AttackCooldown()); //make sure the enemy can't immediately attack the player when walking into a room
+	}
+
+    void Update()
 	{
 		switch(state)
 		{
