@@ -30,5 +30,6 @@ public class FloorGenerationDebug : MonoBehaviour
             setStartPos ? startRoomPos : null,
             sides,
             setSeed ? seed : null));
+        //Time.timeScale = 0;
     }
 }

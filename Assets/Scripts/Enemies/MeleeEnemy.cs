@@ -65,7 +65,12 @@ public class MeleeEnemy : MonoBehaviour, IMeleeAttackStats, IMovementStats, ICom
 		state = State.Walking;
 	}
 
-	void Update()
+    private void OnEnable()
+    {
+		cooldownCoroutine = StartCoroutine(AttackCooldown()); //make sure the enemy can't immediately attack the player when walking into a room
+	}
+
+    void Update()
 	{
 		switch(state)
 		{

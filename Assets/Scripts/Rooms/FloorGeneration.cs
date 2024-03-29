@@ -96,6 +96,7 @@ public class FloorGeneration : MonoBehaviour
     #endregion
 
     [SerializeField] GameObject mainGuy;
+    [SerializeField] GameObject virtualCamera;
     [SerializeField] List<Room> roomPrefabs;
     [SerializeField] List<FloorBlueprintSO> floorBlueprints;
     [SerializeField] Door horizontalDoorPrefab;
@@ -132,8 +133,9 @@ public class FloorGeneration : MonoBehaviour
         {
             floorAttempts++;
             floorBlueprint = floorBlueprints[Random.Range(0, floorBlueprints.Count)].ConstructData();
+            //it'll probably be better to just have each floor pull from its own pool of blueprints, so checks won't be needed
             //TODO: Check more thoroughly whether the chosen floor blueprint fits the desired properties. We can make it so each floor draws from a different pool if this becomes a problem and we don't want to code more.
-            if (floorBlueprint.numSideRoutes != floorData.properties.sideRoutes.Count) continue;
+            //if (floorBlueprint.numSideRoutes != floorData.properties.sideRoutes.Count) continue;
             break;
         } while (floorAttempts < 20);
         if(floorAttempts >= 20)
@@ -185,7 +187,6 @@ public class FloorGeneration : MonoBehaviour
             prototype.room = Instantiate(prefab); //Unity automatically clones the gameobject and returns the room component like this
             prototype.room.mapPos = blueprint.bounds.position;
             prototype.room.transform.position = blueprint.bounds.center * CELLSIZE;
-            prototype.room.Init();
             for(int x = blueprint.bounds.xMin; x < blueprint.bounds.xMax; x++)
             {
                 for(int y = blueprint.bounds.yMin; y < blueprint.bounds.yMax; y++)
@@ -193,6 +194,7 @@ public class FloorGeneration : MonoBehaviour
                     floorData.floorLayout[x, y] = prototype;
                 }
             }
+            prototype.room.Init();
         }
 
         //STEP 3: Create walls/doors
@@ -268,6 +270,9 @@ public class FloorGeneration : MonoBehaviour
             wall.transform.position = wallLocation;
         }
 
+        //it would probably be better to have this be done in GameManager and have that script call this method first
+        mainGuy.transform.position = (floorData.startRoomLocation + Vector2.one * 0.5f) * CELLSIZE;
+        //virtualCamera.transform.position = (floorData.startRoomLocation + Vector2.one * 0.5f) * CELLSIZE;
         return true;
     }
         /* OLD GENERATION CODE
