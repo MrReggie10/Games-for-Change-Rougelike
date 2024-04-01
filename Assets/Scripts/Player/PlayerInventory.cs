@@ -75,7 +75,6 @@ public class PlayerInventory : MonoBehaviour
 
     private void DropItem(ItemSO item)
     {
-        //placeholder
-        Debug.Log($"Dropped item {item.name}.");
+        ItemDrop.Create(item, transform.position);
     }
 }
