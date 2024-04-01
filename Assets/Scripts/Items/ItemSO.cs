@@ -13,6 +13,8 @@ namespace GFC.Items
         public abstract string description { get; }
         public abstract ItemType type { get; }
         public abstract Sprite inventorySprite { get; }
+        //if we want to have the drop sprite be a simplified icon, we can override this
+        public virtual Sprite dropSprite => inventorySprite;
 
         public abstract bool Use(PlayerStats player, PlayerInventory inventory);
     }
