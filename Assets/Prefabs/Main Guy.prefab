@@ -456,7 +456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c89e13b7937f5db439dc9640fc73e4d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1000
+  maxHealth: 200
   baseSpeed: 7
   baseAcceleration: 100
   friction: 40

@@ -46,9 +46,9 @@ public class CombatTarget : MonoBehaviour
 	{
 		if (stats.invuln)
 			return;
-		OnHit?.Invoke(info);
 		damageTaken += Mathf.Max(info.attackPower - stats.defense, 1);
-		if(movement != null)
+		OnHit?.Invoke(info);
+		if (movement != null)
 		{
 			movement.Knockback(info.knockbackForce, info.knockbackTime);
 		}
@@ -59,4 +59,6 @@ public class CombatTarget : MonoBehaviour
 		}
 		Debug.Log(health);
 	}
+
+	public ICombatTargetStats GetStats() { return stats; }
 }
